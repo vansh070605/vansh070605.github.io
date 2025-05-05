@@ -23,6 +23,13 @@ document.addEventListener('DOMContentLoaded', () => {
 const cursor = document.querySelector('.cursor');
 const cursorFollower = document.querySelector('.cursor-follower');
 
+let mouseX = window.innerWidth / 2;
+let mouseY = window.innerHeight / 2;
+let followerX = mouseX;
+let followerY = mouseY;
+let isMoving = false;
+let lastMoveTime = Date.now();
+
 // Check if device is mobile
 const isMobile = () => {
     return window.innerWidth <= 768;
@@ -36,13 +43,12 @@ const initCursor = () => {
         cursorFollower.style.display = 'block';
         
         document.addEventListener('mousemove', (e) => {
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
-            
-            setTimeout(() => {
-                cursorFollower.style.left = e.clientX + 'px';
-                cursorFollower.style.top = e.clientY + 'px';
-            }, 100);
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            isMoving = true;
+            lastMoveTime = Date.now();
+            cursor.style.left = mouseX + 'px';
+            cursor.style.top = mouseY + 'px';
         });
 
         // Enhanced cursor effects
@@ -60,6 +66,17 @@ const initCursor = () => {
                 cursorFollower.style.transform = 'scale(1)';
                 cursorFollower.style.borderColor = 'var(--primary-color)';
                 cursorFollower.style.backgroundColor = 'transparent';
+            });
+        });
+
+        // Text hover effect
+        const textElements = document.querySelectorAll('p, span, h1, h2, h3, h4, h5, h6');
+        textElements.forEach(element => {
+            element.addEventListener('mouseenter', () => {
+                cursor.classList.add('text-hover');
+            });
+            element.addEventListener('mouseleave', () => {
+                cursor.classList.remove('text-hover');
             });
         });
     } else {
@@ -128,119 +145,33 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Enhanced Timeline Animation with Particles
-const createParticle = (x, y) => {
-    const particle = document.createElement('div');
-    particle.className = 'particle';
-    particle.style.cssText = `
-        position: absolute;
-        width: 4px;
-        height: 4px;
-        background: var(--primary-color);
-        border-radius: 50%;
-        pointer-events: none;
-        left: ${x}px;
-        top: ${y}px;
-        opacity: 0.6;
-        box-shadow: 0 0 10px var(--primary-color);
-    `;
-    document.body.appendChild(particle);
-
-    const angle = Math.random() * Math.PI * 2;
-    const velocity = 2 + Math.random() * 2;
-    const vx = Math.cos(angle) * velocity;
-    const vy = Math.sin(angle) * velocity;
-    let opacity = 0.6;
-
-    const animate = () => {
-        if (opacity <= 0) {
-            particle.remove();
-            return;
-        }
-        opacity -= 0.02;
-        particle.style.opacity = opacity;
-        particle.style.transform = `translate(${vx}px, ${vy}px)`;
-        requestAnimationFrame(animate);
-    };
-
-    requestAnimationFrame(animate);
-};
-
-// Enhanced Timeline Observer
+// Modern Timeline Animation
 const timelineItems = document.querySelectorAll('.timeline-item');
 const timelineObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
             entry.target.classList.add('visible');
-            
-            // Add particle effect when timeline item becomes visible
-            const rect = entry.target.getBoundingClientRect();
-            const x = rect.left + rect.width / 2;
-            const y = rect.top + rect.height / 2;
-            for (let i = 0; i < 5; i++) {
-                setTimeout(() => createParticle(x, y), i * 100);
-            }
         }
     });
 }, { 
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
+    threshold: 0.2,
+    rootMargin: '0px 0px -100px 0px'
 });
 
 // Initialize timeline items
 timelineItems.forEach(item => {
-    // Set initial state
     item.style.opacity = '0';
     item.style.transform = 'translateY(20px)';
-    item.style.transition = 'all 0.4s ease';
+    item.style.transition = 'all 0.6s ease-out';
     
-    // Make list items visible immediately
     const listItems = item.querySelectorAll('li');
     listItems.forEach(li => {
-        li.style.opacity = '1';
-        li.style.transform = 'translateX(0)';
+        li.style.opacity = '0';
+        li.style.transform = 'translateX(-10px)';
         li.style.transition = 'all 0.3s ease';
     });
     
-    // Observe the item
     timelineObserver.observe(item);
-});
-
-// Force initial visibility check
-const checkInitialVisibility = () => {
-    timelineItems.forEach(item => {
-        const rect = item.getBoundingClientRect();
-        const isVisible = (
-            rect.top >= 0 &&
-            rect.left >= 0 &&
-            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-            rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-        );
-        
-        if (isVisible) {
-            item.classList.add('visible');
-        }
-    });
-};
-
-// Run initial visibility check
-document.addEventListener('DOMContentLoaded', checkInitialVisibility);
-window.addEventListener('load', checkInitialVisibility);
-
-// Enhanced Resume Column Interactions
-const resumeColumns = document.querySelectorAll('.resume-column');
-resumeColumns.forEach(column => {
-    column.addEventListener('mouseenter', () => {
-        column.style.transform = 'translateY(-5px)';
-        column.style.borderColor = 'var(--primary-color)';
-        column.style.boxShadow = '0 10px 30px rgba(100, 255, 218, 0.1)';
-    });
-    
-    column.addEventListener('mouseleave', () => {
-        column.style.transform = 'translateY(0)';
-        column.style.borderColor = 'var(--glass-border)';
-        column.style.boxShadow = 'none';
-    });
 });
 
 // Enhanced Skill Bar Animation
@@ -426,3 +357,21 @@ backToTopButton.addEventListener('click', () => {
         behavior: 'smooth'
     });
 });
+
+function animateFollower() {
+    // Smoothly move the follower towards the mouse
+    followerX += (mouseX - followerX) * 0.15;
+    followerY += (mouseY - followerY) * 0.15;
+    cursorFollower.style.left = followerX + 'px';
+    cursorFollower.style.top = followerY + 'px';
+
+    // If mouse hasn't moved for 200ms, move the dot to the center of the follower
+    if (Date.now() - lastMoveTime > 200) {
+        cursor.style.left = followerX + 'px';
+        cursor.style.top = followerY + 'px';
+    }
+
+    requestAnimationFrame(animateFollower);
+}
+
+animateFollower();

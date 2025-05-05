@@ -567,7 +567,7 @@ body {
 }
 
 .timeline-content h4 {
-    color: var(--heading-color);
+    color: var(---color);
     font-size: 1.3rem;
     margin-bottom: 10px;
     font-weight: 600;
@@ -584,7 +584,6 @@ body {
     list-style: none;
     padding-left: 0;
     margin: 0;
-    display: block;
 }
 
 .timeline-content ul li {
@@ -593,12 +592,10 @@ body {
     margin-bottom: 8px;
     padding-left: 20px;
     position: relative;
-    opacity: 1 !important;
-    transform: translateX(0) !important;
+    opacity: 0;
+    transform: translateX(-10px);
     transition: all 0.3s ease;
     line-height: 1.6;
-    display: block;
-    visibility: visible !important;
 }
 
 .timeline-content ul li:last-child {
@@ -610,7 +607,6 @@ body {
     position: absolute;
     left: 0;
     color: var(--primary-color);
-    display: inline-block;
 }
 
 /* Animation for timeline items */
@@ -619,22 +615,15 @@ body {
     transform: translateY(0);
 }
 
-.timeline-item.visible .timeline-content {
-    opacity: 1;
-    transform: translateY(0);
-}
-
 .timeline-item.visible .timeline-content ul li {
-    opacity: 1 !important;
-    transform: translateX(0) !important;
-    visibility: visible !important;
+    opacity: 1;
+    transform: translateX(0);
 }
 
-/* Remove transition delays */
-.timeline-item.visible .timeline-content ul li:nth-child(1) { transition-delay: 0s !important; }
-.timeline-item.visible .timeline-content ul li:nth-child(2) { transition-delay: 0s !important; }
-.timeline-item.visible .timeline-content ul li:nth-child(3) { transition-delay: 0s !important; }
-.timeline-item.visible .timeline-content ul li:nth-child(4) { transition-delay: 0s !important; }
+.timeline-item.visible .timeline-content ul li:nth-child(1) { transition-delay: 0.1s; }
+.timeline-item.visible .timeline-content ul li:nth-child(2) { transition-delay: 0.2s; }
+.timeline-item.visible .timeline-content ul li:nth-child(3) { transition-delay: 0.3s; }
+.timeline-item.visible .timeline-content ul li:nth-child(4) { transition-delay: 0.4s; }
 
 /* Particle Animation */
 .particle {
@@ -833,26 +822,20 @@ body {
 }
 
 /* Custom Cursor */
-.cursor {
-    width: 8px;
-    height: 8px;
-    background: var(--primary-color);
-    border-radius: 50%;
+.cursor, .cursor-follower {
     position: fixed;
+    left: 0;
+    top: 0;
+    transform: translate(-50%, -50%);
     pointer-events: none;
     z-index: 9999;
-    transition: transform 0.2s ease;
-    display: block;
 }
 
 .cursor-follower {
-    width: 40px;
-    height: 40px;
+    width: 20px;
+    height: 20px;
     border: 1px solid var(--primary-color);
     border-radius: 50%;
-    position: fixed;
-    pointer-events: none;
-    z-index: 9998;
     transition: transform 0.4s ease;
     display: block;
 }
