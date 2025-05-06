@@ -129,18 +129,34 @@ function type() {
 type();
 
 // Enhanced Smooth Scrolling with offset
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+// Only attach to nav links inside .nav-links, not all anchor tags
+
+document.querySelectorAll('.nav-links .nav-link[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
-        e.preventDefault();
+        // Only handle internal links
         const target = document.querySelector(this.getAttribute('href'));
         if (target) {
-            const navHeight = document.querySelector('.nav-menu').offsetHeight;
-            const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - navHeight;
-            
-            window.scrollTo({
-                top: targetPosition,
-                behavior: 'smooth'
-            });
+            e.preventDefault();
+
+            // If mobile nav is open, close it first
+            if (document.body.classList.contains('menu-open')) {
+                closeMenu();
+                setTimeout(() => {
+                    const navHeight = document.querySelector('.nav-menu').offsetHeight;
+                    const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - navHeight;
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }, 400); // match your menu close transition
+            } else {
+                const navHeight = document.querySelector('.nav-menu').offsetHeight;
+                const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - navHeight;
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                });
+            }
         }
     });
 });
@@ -262,8 +278,16 @@ const toggleMenu = () => {
 
 // Hamburger Menu Toggle
 hamburger.addEventListener('click', (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Defensive: stops any default action
     e.stopPropagation();
+    // Defensive: prevent hash change
+    if (window.location.hash && window.location.hash !== '#') {
+        history.replaceState(null, null, ' ');
+    }
+    // Defensive: prevent scroll restoration
+    if ('scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+    }
     toggleMenu();
 });
 
