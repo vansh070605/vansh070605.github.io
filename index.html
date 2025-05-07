@@ -163,35 +163,13 @@
                     <h3>Experience</h3>
                     <div class="timeline">
                         <div class="timeline-item">
-                            <div class="timeline-date">Mar 2025 - Present</div>
+                            <div class="timeline-date">Jan 2025 - Present</div>
                             <div class="timeline-content">
                                 <h4>RCOTBA Industries</h4>
-                                <p>Tech Manager</p>
+                                <p>Intern</p>
                                 <ul>
                                     <li>Leading technical strategy and innovation initiatives</li>
                                     <li>Managing cross-functional teams and technical resources</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="timeline-item">
-                            <div class="timeline-date">Feb 2025 - Mar 2025</div>
-                            <div class="timeline-content">
-                                <h4>RCOTBA Industries</h4>
-                                <p>Tech Head</p>
-                                <ul>
-                                    <li>Led technical initiatives and managed development teams</li>
-                                    <li>Implemented innovative solutions for business challenges</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="timeline-item">
-                            <div class="timeline-date">Jan 2025 - Feb 2025</div>
-                            <div class="timeline-content">
-                                <h4>RCOTBA Industries</h4>
-                                <p>Technical Team Member</p>
-                                <ul>
-                                    <li>Contributed to technical projects and initiatives</li>
-                                    <li>Collaborated with team members on development tasks</li>
                                 </ul>
                             </div>
                         </div>
@@ -201,8 +179,8 @@
                                 <h4>Digital Info Solutions Pvt Ltd</h4>
                                 <p>Intern</p>
                                 <ul>
-                                    <li>Worked on web development projects</li>
-                                    <li>Collaborated with senior developers</li>
+                                    <li>Worked on web development projects and learned about FLASK.</li>
+                                    <li>Collaborated with senior developers and learned about the latest technologies.</li>
                                 </ul>
                             </div>
                         </div>
@@ -212,19 +190,25 @@
                     <h3>Education</h3>
                     <div class="timeline">
                         <div class="timeline-item">
-                            <div class="timeline-date">2023-Present</div>
+                            <div class="timeline-date">Jul 2023 - Present</div>
                             <div class="timeline-content">
                                 <h4>S.R.M University, Kattankulathur</h4>
                                 <p>Bachelor of Technology</p>
-                                <p>Grade: 7.65</p>
+                                <ul>
+                                    <li>CGPA: 7.65</li>
+                                    <li>Artificial Intelligence, Machine Learning, Deep Learning, Computer Vision, Natural Language Processing, etc.</li>
+                                </ul>
                             </div>
                         </div>
                         <div class="timeline-item">
-                            <div class="timeline-date">2023-Present</div>
+                            <div class="timeline-date">Apr 2009 - Jun 2023</div>
                             <div class="timeline-content">
                                 <h4>A.P.J School, NOIDA</h4>
                                 <p>Intermediate</p>
-                                <p>Grade: A</p>
+                                <ul>
+                                    <li>Grade: A</li>
+                                    <li>Physics, Chemistry, Mathematics, Computer Science, English, Hindi, French, Physical Education, etc.</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -241,8 +225,8 @@
                         <img src="lung_cancer.png" alt="LUNG CANCER PREDICTOR">
                     </div>
                     <div class="project-content">
-                        <h3>LUNG CANCER PREDICTOR</h3>
-                        <p>LUNG CANCER PREDICTOR is a modern web application for predicting lung cancer risk based on user symptoms and medical history.</p>
+                        <h3>Lung Cancer Predictor</h3>
+                        <p>Lung Cancer Predictor is a modern web application for predicting lung cancer risk based on user symptoms and medical history.</p>
                         <div class="project-tech">
                             <span>Flask</span>
                             <span>SQL</span>
@@ -354,7 +338,7 @@
                         <li><a href="https://github.com/vansh070605" target="_blank"><i class="fab fa-github"></i> GitHub</a></li>
                         <li><a href="https://www.linkedin.com/in/thevanshagrawal/" target="_blank"><i class="fab fa-linkedin"></i> LinkedIn</a></li>
                         <li><a href="https://www.instagram.com/thevanshagrawal" target="_blank"><i class="fab fa-instagram"></i> Instagram</a></li>
-                        <li><a href="https://x.com/vansh070605" target="_blank"><i class="fab fa-x-twitter"></i> X</a></li>
+                        <li><a href="https://x.com/vansh070605" target="_blank"><i class="fab fa-x-twitter"></i> Twitter</a></li>
                     </ul>
                 </div>
             </div>
@@ -374,5 +358,30 @@
             offset: 100
         });
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fix 1: Apply visible class to all timeline items
+            const timelineItems = document.querySelectorAll('.timeline-item');
+            timelineItems.forEach(item => {
+                item.classList.add('visible');
+            });
+            
+            // Fix 2: Add scroll-based visibility for animation effect (optional)
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, {
+                threshold: 0.1 // Trigger when 10% of the item is visible
+            });
+            
+            // Observe timeline items
+            timelineItems.forEach(item => {
+                observer.observe(item);
+            });
+        });
+        </script>
 </body>
 </html> 
