@@ -4,13 +4,13 @@
   "private": true,
   "homepage": "https://vansh070605.github.io",
   "scripts": {
-  "dev": "vite",
-  "build": "vite build",
-  "vercel-build": "vite build",
-  "preview": "vite preview",
-  "predeploy": "npm run build",
-  "deploy": "gh-pages -d dist --dotfiles"
-},
+    "dev": "vite",
+    "build": "vite build",
+    "vercel-build": "npx vite build",
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist --dotfiles"
+  },
   "dependencies": {
     "framer-motion": "^11.0.0",
     "react": "^18.3.1",
