@@ -6,10 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "vercel-build": "npx vite build",
-    "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist --dotfiles"
+    "deploy": "gh-pages -d dist",
+    "preview": "vite preview"
   },
   "dependencies": {
     "framer-motion": "^11.0.0",
