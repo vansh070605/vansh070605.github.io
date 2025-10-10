@@ -6,7 +6,7 @@
 }
 
 html, body {
-  font-family: "Poppins", sans-serif;
+  font-family: "Inter", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 25%, #16213e 50%, #0a0a0a 100%);
   background-size: 400% 400%;
   animation: gradientShift 15s ease infinite;
@@ -15,6 +15,9 @@ html, body {
   scroll-behavior: smooth;
   line-height: 1.6;
   position: relative;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 @keyframes gradientShift {
@@ -32,10 +35,27 @@ body::before {
   width: 100%;
   height: 100%;
   background-image: 
-    radial-gradient(circle at 20% 20%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(118, 75, 162, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 40% 60%, rgba(255, 119, 198, 0.08) 0%, transparent 50%);
+    radial-gradient(circle at 20% 20%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(118, 75, 162, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 40% 60%, rgba(255, 119, 198, 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 60% 30%, rgba(120, 219, 255, 0.1) 0%, transparent 50%);
   animation: particleFloat 20s ease-in-out infinite;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* === ADDITIONAL GLOW EFFECTS === */
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 10% 10%, rgba(102, 126, 234, 0.05) 0%, transparent 30%),
+    radial-gradient(circle at 90% 90%, rgba(118, 75, 162, 0.05) 0%, transparent 30%);
+  animation: subtleGlow 25s ease-in-out infinite;
   z-index: -1;
   pointer-events: none;
 }
@@ -44,6 +64,11 @@ body::before {
   0%, 100% { transform: translateY(0px) rotate(0deg); }
   33% { transform: translateY(-20px) rotate(120deg); }
   66% { transform: translateY(10px) rotate(240deg); }
+}
+
+@keyframes subtleGlow {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.1); }
 }
 
 /* === CUSTOM SCROLLBAR === */
@@ -74,13 +99,16 @@ body::before {
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem 4rem;
-  background: rgba(10, 10, 10, 0.7);
-  backdrop-filter: blur(25px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 0 0 20px 20px;
+  background: rgba(10, 10, 10, 0.8);
+  backdrop-filter: blur(30px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 0 0 25px 25px;
   z-index: 1000;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .navbar::before {
@@ -109,13 +137,14 @@ body::before {
 }
 
 .logo {
-  font-size: 2rem;
-  font-weight: 800;
+  font-size: 2.2rem;
+  font-weight: 900;
   color: #fff;
-  letter-spacing: 2px;
+  letter-spacing: 3px;
   text-decoration: none;
   position: relative;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
 }
 
 .logo::before {
@@ -160,6 +189,11 @@ body::before {
 @keyframes textGlow {
   0% { filter: brightness(1); }
   100% { filter: brightness(1.2); }
+}
+
+@keyframes textShimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
 .navbar ul {
@@ -280,20 +314,27 @@ body::before {
 }
 
 .hero-title {
-  font-size: clamp(3rem, 8vw, 6rem);
+  font-size: clamp(3.5rem, 9vw, 7rem);
   font-weight: 900;
-  letter-spacing: -2px;
+  letter-spacing: -3px;
   color: #ffffff;
   margin-bottom: 1.5rem;
-  line-height: 1.1;
+  line-height: 1.05;
+  text-shadow: 0 0 30px rgba(102, 126, 234, 0.2);
+  background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 50%, #ffffff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .highlight {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #ff77c6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   position: relative;
+  animation: textShimmer 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 10px rgba(102, 126, 234, 0.3));
 }
 
 .hero-subtitle {
@@ -334,9 +375,14 @@ body::before {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #ff77c6 100%);
   color: #ffffff;
-  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+  box-shadow: 
+    0 10px 30px rgba(102, 126, 234, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden;
 }
 
 .btn-primary::before {
@@ -356,7 +402,11 @@ body::before {
 
 .btn-primary:hover {
   transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+  box-shadow: 
+    0 15px 40px rgba(102, 126, 234, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  filter: brightness(1.1);
 }
 
 .btn-secondary {

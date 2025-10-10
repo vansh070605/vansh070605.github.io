@@ -61,32 +61,61 @@ const Skills = () => {
             <motion.div
               key={index}
               className="skill-card"
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.1 * index }}
+              initial={{ opacity: 0, scale: 0.8, rotateX: 20 }}
+              whileInView={{ opacity: 1, scale: 1, rotateX: 0 }}
+              transition={{ duration: 0.8, delay: 0.1 * index, ease: "easeOut" }}
               viewport={{ once: true }}
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ 
+                scale: 1.05,
+                rotateY: 5,
+                transition: { duration: 0.3 }
+              }}
             >
-              <div className="skill-header">
-                <div className="skill-icon" style={{ color: skill.color }}>
+              <motion.div 
+                className="skill-header"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                viewport={{ once: true }}
+              >
+                <motion.div 
+                  className="skill-icon" 
+                  style={{ color: skill.color }}
+                  whileHover={{ scale: 1.2, rotate: 10 }}
+                  transition={{ duration: 0.2 }}
+                >
                   {skill.icon}
-                </div>
+                </motion.div>
                 <div className="skill-info">
                   <h3>{skill.name}</h3>
-                  <span className="skill-percentage">{skill.level}%</span>
+                  <motion.span 
+                    className="skill-percentage"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.4, delay: 0.3 }}
+                    viewport={{ once: true }}
+                  >
+                    {skill.level}%
+                  </motion.span>
                 </div>
-              </div>
+              </motion.div>
               
-              <div className="skill-bar-container">
+              <motion.div 
+                className="skill-bar-container"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                viewport={{ once: true }}
+              >
                 <motion.div
                   className="skill-bar"
                   style={{ backgroundColor: skill.color }}
                   initial={{ width: 0 }}
                   whileInView={{ width: `${skill.level}%` }}
-                  transition={{ duration: 1.5, delay: 0.5 + 0.1 * index, ease: "easeOut" }}
+                  transition={{ duration: 2, delay: 0.5 + 0.1 * index, ease: "easeOut" }}
                   viewport={{ once: true }}
                 />
-              </div>
+              </motion.div>
             </motion.div>
           ))}
         </motion.div>

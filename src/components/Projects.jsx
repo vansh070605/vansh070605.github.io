@@ -86,13 +86,14 @@ const Projects = () => {
             <motion.div
               key={index}
               className="project-card"
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 * index }}
+              initial={{ opacity: 0, y: 50, rotateX: 15 }}
+              whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+              transition={{ duration: 0.8, delay: 0.1 * index, ease: "easeOut" }}
               viewport={{ once: true }}
               whileHover={{ 
-                scale: 1.02,
-                transition: { duration: 0.3 }
+                scale: 1.03,
+                rotateY: 5,
+                transition: { duration: 0.4, ease: "easeOut" }
               }}
             >
               <div className="project-image">
@@ -100,25 +101,69 @@ const Projects = () => {
               </div>
               
               <div className="project-content">
-                <h3>{project.title}</h3>
-                <p>{project.description}</p>
+                <motion.h3
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  viewport={{ once: true }}
+                >
+                  {project.title}
+                </motion.h3>
+                <motion.p
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.3 }}
+                  viewport={{ once: true }}
+                >
+                  {project.description}
+                </motion.p>
                 
-                <div className="project-tags">
+                <motion.div 
+                  className="project-tags"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
+                  viewport={{ once: true }}
+                >
                   {project.tags.map((tag, tagIndex) => (
-                    <span key={tagIndex} className="project-tag">
+                    <motion.span 
+                      key={tagIndex} 
+                      className="project-tag"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.4, delay: 0.1 * tagIndex }}
+                      viewport={{ once: true }}
+                      whileHover={{ scale: 1.1 }}
+                    >
                       {tag}
-                    </span>
+                    </motion.span>
                   ))}
-                </div>
+                </motion.div>
                 
-                <div className="project-links">
-                  <a href={project.liveUrl} className="project-link primary">
+                <motion.div 
+                  className="project-links"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.5 }}
+                  viewport={{ once: true }}
+                >
+                  <motion.a 
+                    href={project.liveUrl} 
+                    className="project-link primary"
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
                     Live Demo
-                  </a>
-                  <a href={project.githubUrl} className="project-link secondary">
+                  </motion.a>
+                  <motion.a 
+                    href={project.githubUrl} 
+                    className="project-link secondary"
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
                     GitHub
-                  </a>
-                </div>
+                  </motion.a>
+                </motion.div>
               </div>
             </motion.div>
           ))}
