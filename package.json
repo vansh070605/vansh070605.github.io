@@ -2,6 +2,7 @@
   "name": "new-portfolio-website",
   "version": "0.0.1",
   "private": true,
+  "homepage": "https://vansh070605.github.io",
   "scripts": {
   "dev": "vite",
   "build": "vite build",
