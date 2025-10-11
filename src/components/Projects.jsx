@@ -3,17 +3,17 @@ import React from "react";
 
 const Projects = () => {
   const { scrollY } = useScroll();
-  const y1 = useTransform(scrollY, [800, 1500], [0, -150]);
-  const y2 = useTransform(scrollY, [800, 1500], [0, 150]);
-  const opacity = useTransform(scrollY, [800, 1200], [0, 1]);
-
+  const y1 = useTransform(scrollY, [1000, 1800], [0, -100]);
+  const y2 = useTransform(scrollY, [1000, 1800], [0, 100]);
+  const opacity = useTransform(scrollY, [1000, 1400], [0, 1]);
+  
   const projects = [
     {
       title: "Career Path Explorer (CAPE)",
       description: "A comprehensive career recommendation engine that maps student profiles to ranked career suggestions. Features explainable Random Forest ML model, interactive quiz system, and full-stack web application with React frontend and Python backend.",
       image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=500&h=300&fit=crop",
       tags: ["Python", "React", "Flask", "Machine Learning", "Random Forest"],
-      liveUrl: "https://github.com/vansh070605/Career-Path-Explorer",
+      liveUrl: "https://www.linkedin.com/posts/thevanshagrawal_sih2025-hackathon-teamwork-activity-7377257244868059136-dakq?utm_source=share&utm_medium=member_desktop&rcm=ACoAAElgtr8B7dVS55CHuurhiU8Y2ZcdqDhYU-k",
       githubUrl: "https://github.com/vansh070605/Career-Path-Explorer"
     },
     {
@@ -29,32 +29,32 @@ const Projects = () => {
       description: "Machine learning model achieving 96% prediction accuracy using Logistic Regression, Random Forest, and SVM. Preprocessed data by handling missing values and encoding categorical variables to support early lung cancer diagnosis.",
       image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=500&h=300&fit=crop",
       tags: ["Python", "Scikit-Learn", "Machine Learning", "Data Preprocessing"],
-      liveUrl: "#",
-      githubUrl: "#"
+      liveUrl: "https://lung-cancer-predictor-idq6.onrender.com/",
+      githubUrl: "https://github.com/vansh070605/LUNG-CANCER-PREDICTOR.git"
     },
     {
       title: "Expense Manager App",
       description: "Full-stack expense tracking web application built with Flask backend and HTML, CSS, JavaScript frontend. Features authentication, transaction logging, budget management, and responsive design deployed on Vercel.",
       image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=500&h=300&fit=crop",
       tags: ["Flask", "HTML/CSS/JS", "MySQL", "Vercel"],
-      liveUrl: "#",
-      githubUrl: "#"
+      liveUrl: "https://expense-manager-app-xp1e.onrender.com/",
+      githubUrl: "https://github.com/vansh070605/Expense-Manager-App.git"
     },
     {
       title: "Multi Gesture Detector",
       description: "Real-time hand gesture recognition system using computer vision and machine learning. Trained CNN and KNN models for accurate gesture classification with optimized detection speed for various conditions.",
-      image: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=500&h=300&fit=crop",
+      image: "https://realsenseai.com/wp-content/uploads/2020/01/hand_tracking_and_gesture_recognition.jpg",
       tags: ["Computer Vision", "CNN", "KNN", "OpenCV"],
-      liveUrl: "#",
-      githubUrl: "#"
+      liveUrl: "https://www.linkedin.com/posts/thevanshagrawal_opencv-tensorflow-gesturerecognition-activity-7316212483638104064-kcqE?utm_source=share&utm_medium=member_desktop&rcm=ACoAAElgtr8B7dVS55CHuurhiU8Y2ZcdqDhYU-k",
+      githubUrl: "https://github.com/vansh070605/MULTI-GESTURE-DETECTOR.git"
     },
     {
-      title: "Smart India Hackathon Game",
-      description: "Open-world climbing game developed for Smart India Hackathon 2024. Collaborated with Firewall Faction team to create an innovative gaming solution showcasing problem-solving and teamwork skills.",
+      title: "Campus Core",
+      description: "CampusCore is a student productivity web app that helps you manage notes, to-do lists, and schedules. It features a dashboard, calendar, and clock utilities, all accessible through a secure, user-friendly multi-page interface.",
       image: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=500&h=300&fit=crop",
-      tags: ["Game Development", "Team Collaboration", "Innovation", "Problem Solving"],
-      liveUrl: "#",
-      githubUrl: "#"
+      tags: ["Firebase", "Vercel", "HTML/CSS/JS"],
+      liveUrl: "https://campus-core-one.vercel.app/pages/login.html",
+      githubUrl: "https://github.com/vansh070605/CAMPUS-CORE.git"
     }
   ];
 

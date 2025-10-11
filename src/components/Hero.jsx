@@ -139,8 +139,7 @@ const Hero = () => {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 1.8 }}
             >
-              I craft beautiful, interactive web experiences that blend creativity with cutting-edge technology. 
-              Specializing in modern UI/UX design and seamless digital solutions.
+              Greetings! I am Vansh Agrawal, and I am passionate and driven student currently pursuing a degree in Computer Science with a dedicated focus on Artificial Intelligence and Machine Learning.
             </motion.span>
           </motion.p>
           
