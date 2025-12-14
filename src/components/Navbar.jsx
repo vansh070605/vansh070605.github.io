@@ -1,93 +1,88 @@
-import { motion, useScroll, useTransform } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
-const Navbar = () => {
-  const { scrollY } = useScroll();
-  const [isScrolled, setIsScrolled] = useState(false);
-  
-  const navbarOpacity = useTransform(scrollY, [0, 100], [0.8, 0.95]);
-  const navbarBlur = useTransform(scrollY, [0, 100], [20, 30]);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  return (
-    <motion.nav 
-      className={`navbar ${isScrolled ? 'scrolled' : ''}`}
-      style={{
-        background: `rgba(10, 10, 10, ${navbarOpacity})`,
-        backdropFilter: `blur(${navbarBlur}px)`
-      }}
-    >
-      <motion.a 
-        href="#hero" 
-        className="logo"
-        whileHover={{ scale: 1.05 }}
-        transition={{ duration: 0.2 }}
-      >
-        Vansh<span>Agrawal</span>
-      </motion.a>
-      
-      <ul>
-        <li>
-          <motion.a 
-            href="#about"
-            whileHover={{ scale: 1.1 }}
-            transition={{ duration: 0.2 }}
-          >
-            About
-          </motion.a>
-        </li>
-        <li>
-          <motion.a 
-            href="#skills"
-            whileHover={{ scale: 1.1 }}
-            transition={{ duration: 0.2 }}
-          >
-            Skills
-          </motion.a>
-        </li>
-        <li>
-          <motion.a 
-            href="#projects"
-            whileHover={{ scale: 1.1 }}
-            transition={{ duration: 0.2 }}
-          >
-            Projects
-          </motion.a>
-        </li>
-        <li>
-          <motion.a 
-            href="#experience"
-            whileHover={{ scale: 1.1 }}
-            transition={{ duration: 0.2 }}
-          >
-            Experience
-          </motion.a>
-        </li>
-        <li>
-          <motion.a 
-            href="#contact"
-            whileHover={{ scale: 1.1 }}
-            transition={{ duration: 0.2 }}
-          >
-            Contact
-          </motion.a>
-        </li>
-      </ul>
-      
-      <button className="menu-toggle">
-        ☰
-      </button>
-    </motion.nav>
-  );
+const menuVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { duration: 0.35, ease: "easeOut" }
+  },
+  exit: {
+    opacity: 0,
+    transition: { duration: 0.25, ease: "easeIn" }
+  }
 };
 
-export default Navbar;
-    
+const linkVariants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: (i) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: i * 0.07, ease: "easeOut" }
+  })
+};
+
+export default function Navbar() {
+  const [open, setOpen] = useState(false);
+
+  const links = [
+    { name: "Home", href: "#hero" },
+    { name: "Projects", href: "#projects" },
+    { name: "About", href: "#about" },
+    { name: "Skills", href: "#skills" },
+    { name: "Experience", href: "#experience" },
+    { name: "Contact", href: "#contact" }
+  ];
+
+  return (
+    <>
+      {/* Menu button */}
+      <motion.button
+        className="nav-toggle"
+        onClick={() => setOpen(true)}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+      >
+        Menu
+      </motion.button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            className="nav-overlay"
+            variants={menuVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+          >
+            <motion.button
+              className="nav-close"
+              onClick={() => setOpen(false)}
+              whileHover={{ rotate: 90 }}
+              transition={{ duration: 0.3 }}
+            >
+              ✕
+            </motion.button>
+
+            <nav className="nav-links">
+              {links.map((link, i) => (
+                <motion.a
+                  key={link.name}
+                  href={link.href}
+                  custom={i}
+                  variants={linkVariants}
+                  initial="hidden"
+                  animate="visible"
+                  onClick={() => setOpen(false)}
+                  whileHover={{ x: 10 }}
+                >
+                  {link.name}
+                </motion.a>
+              ))}
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}

@@ -1,37 +1,34 @@
 import { motion } from "framer-motion";
-import React from "react";
 
-const Footer = () => {
+export default function Footer() {
   return (
-    <footer className="footer">
-      <div className="footer-content">
-        <motion.div
-          className="footer-links"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-        >
-          <a href="#about">About</a>
-          <a href="#projects">Projects</a>
-          <a href="#contact">Contact</a>
-          <a href="mailto:vansh070605@gmail.com">Email</a>
-          <a href="https://linkedin.com/in/vanshagrawal" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-          <a href="https://github.com/vanshagrawal" target="_blank" rel="noopener noreferrer">GitHub</a>
-        </motion.div>
-        
-        <motion.p 
-          className="footer-text"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          viewport={{ once: true }}
-        >
-          © {new Date().getFullYear()} Vansh Agrawal. All Rights Reserved.
-        </motion.p>
+    <motion.footer
+      className="footer"
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      viewport={{ once: true }}
+    >
+      <div className="footer-left">
+        <p className="footer-name">Vansh Agrawal</p>
+        <p className="footer-copy">
+          © {new Date().getFullYear()} — All rights reserved
+        </p>
       </div>
-    </footer>
-  );
-};
 
-export default Footer;
+      <div className="footer-right">
+        <a href="https://github.com/vansh070605" target="_blank" rel="noreferrer">
+          GitHub
+        </a>
+        <a href="http://www.linkedin.com/in/thevanshagrawal" target="_blank" rel="noreferrer">
+          LinkedIn
+        </a>
+        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=vansh070605@gmail.com" target="_blank" rel="noreferrer">
+          Email me
+        </a>
+
+
+      </div>
+    </motion.footer>
+  );
+}

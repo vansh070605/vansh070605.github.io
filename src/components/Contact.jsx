@@ -1,142 +1,55 @@
-import { motion, useScroll, useTransform } from "framer-motion";
-import React, { useState } from "react";
+import { motion } from "framer-motion";
 
-const Contact = () => {
-  const { scrollY } = useScroll();
-  const y1 = useTransform(scrollY, [1200, 2000], [0, -100]);
-  const y2 = useTransform(scrollY, [1200, 2000], [0, 100]);
-  const opacity = useTransform(scrollY, [1200, 1600], [0, 1]);
-
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    message: ''
-  });
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle form submission here
-    console.log('Form submitted:', formData);
-    // Reset form
-    setFormData({ name: '', email: '', message: '' });
-  };
-
+export default function Contact() {
   return (
     <section className="contact" id="contact">
-      <motion.div 
-        className="contact-content"
-        style={{ opacity }}
+      <motion.div
+        className="contact-card"
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        viewport={{ once: true }}
       >
-        <motion.h2
-          style={{ y: y1 }}
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-        >
-          Let's Work Together
-        </motion.h2>
-        
-        <motion.p 
-          className="contact-text"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          viewport={{ once: true }}
-        >
-          Ready to bring your ideas to life? I'd love to hear about your project and discuss how we can create something amazing together. 
-          Feel free to reach out via email or connect with me on LinkedIn!
-        </motion.p>
+        <p className="section-tag">Contact</p>
+        <h2 className="section-title">Let’s build something meaningful.</h2>
+        <p className="contact-subtext">
+          Open to collaborations, internships, and exciting ideas.
+        </p>
 
-        <motion.div
-          style={{ y: y2 }}
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          viewport={{ once: true }}
+        {/* ✅ Formspree connected */}
+        <form
+          className="contact-form"
+          action="https://formspree.io/f/xnnerbgd"
+          method="POST"
         >
-          <form className="contact-form" onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label htmlFor="name">Name</label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                required
-                placeholder="Your name"
-              />
-            </div>
-            
-            <div className="form-group">
-              <label htmlFor="email">Email</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                placeholder="your.email@example.com"
-              />
-            </div>
-            
-            <div className="form-group">
-              <label htmlFor="message">Message</label>
-              <textarea
-                id="message"
-                name="message"
-                value={formData.message}
-                onChange={handleChange}
-                required
-                placeholder="Tell me about your project..."
-              />
-            </div>
-            
-            <motion.button
-              type="submit"
-              className="submit-btn"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              Send Message
-            </motion.button>
-            
-            <motion.div
-              className="resume-download"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.6 }}
-              viewport={{ once: true }}
-            >
-              <p>Or download my resume:</p>
-              <motion.a
-                href="#"
-                className="btn-secondary"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  // You can replace this with actual resume download logic
-                  alert('Resume download would be implemented here!');
-                }}
-              >
-                📄 Download Resume
-              </motion.a>
-            </motion.div>
-          </form>
-        </motion.div>
+          <div className="input-group">
+            <input type="text" name="name" required />
+            <label>Name</label>
+          </div>
+
+          <div className="input-group">
+            <input type="email" name="email" required />
+            <label>Email</label>
+          </div>
+
+          <div className="input-group">
+            <textarea name="message" rows="4" required />
+            <label>Message</label>
+          </div>
+
+          {/* Optional hidden field */}
+          <input type="hidden" name="_subject" value="New Portfolio Contact" />
+
+          <motion.button
+            type="submit"
+            className="submit-btn"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.97 }}
+          >
+            Send Message →
+          </motion.button>
+        </form>
       </motion.div>
     </section>
   );
-};
-
-export default Contact;
+}
