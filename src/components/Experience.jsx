@@ -3,24 +3,29 @@ import { fadeUp } from "../utils/motion";
 
 const timeline = [
   {
-    year: "2025",
-    title: "AI & ML Projects",
-    desc: "Worked on healthcare-focused ML systems and data-driven models."
+    year: "Jan 2025 - Present",
+    title: "RCOTBA Industries",
+    desc: "Delivered multiple tech projects ahead of schedule with high quality."
   },
   {
-    year: "2024",
-    title: "Ultron 8.0 Hackathon",
-    desc: "Collaborated in a national-level hackathon on rapid prototyping."
+    year: "Mar 2025 - Oct 2025",
+    title: "SRMIST ACM SIGAI",
+    desc: "Solely hosted and managed a successful AI quiz event on Unstop."
   },
   {
-    year: "2024",
-    title: "MATLAB Image Processing",
-    desc: "Completed Image Processing Onramp with hands-on visual analysis."
+    year: "Apr 2025 - Jun 2025",
+    title: "AIML Virtual Intern",
+    desc: "Gained hands-on AI/ML experience using AWS."
   },
   {
-    year: "2023",
-    title: "B.Tech Engineering",
-    desc: "Started undergraduate journey with a focus on software systems."
+    year: "Dec 2024 - Jan 2025",
+    title: "Intenship Trainee",
+    desc: "Built full-stack web applications using Flask."
+  },
+  {
+    year: "Mar 2024 - Aug 2024",
+    title: "Tech Team Member",
+    desc: "Learned HTML, CSS, and JS by building website & CRUD operations."
   }
 ];
 
