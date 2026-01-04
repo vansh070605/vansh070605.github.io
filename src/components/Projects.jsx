@@ -5,22 +5,22 @@ const projects = [
     title: "Career Path Explorer",
     description:
       "A compact, explainable career recommendation engine that maps student profiles (skills, education, interests) to ranked career suggestions.",
-    tech: ["Python", "Flask", "Machine Learning"],
+    tech: ["Data Analysis", "Scikit-learn", "Machine Learning"],
     link: "https://github.com/vansh070605/Career-Path-Explorer.git",
   },
   {
-    title: "Campus Core",
+    title: "Voxera",
     description:
-      "Student productivity web app that helps you manage notes, to-do lists, and schedules.",
-    tech: ["CSS", "HTML", "Firebase", "JS"],
-    link: "https://github.com/vansh070605/CAMPUS-CORE.git",
+      "Voxera is a real-time WebRTC app for peer-to-peer voice, video, and screen sharing.",
+    tech: ["Socket.io", "WebRTC", "NodeJS"],
+    link: "https://voxera-rtc.netlify.app/",
   },
   {
     title: "Lung Cancer Predictor",
     description:
       "Lung Cancer Predictor is a modern web application for predicting lung cancer risk based on user symptoms and medical history.",
     tech: ["Flask", "ML", "Database"],
-    link: "https://github.com/vansh070605/LUNG-CANCER-PREDICTOR.git",
+    link: "https://lung-cancer-predictor-idq6.onrender.com/",
   },
 ];
 
