@@ -1,29 +1,28 @@
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
-import Projects from "./components/Projects";
 import About from "./components/About";
 import Skills from "./components/Skills";
+import Projects from "./components/Projects";
 import Experience from "./components/Experience";
 import Contact from "./components/Contact";
-import Footer from "./components/Footer";
+import CustomCursor from "./components/CustomCursor";
 
 export default function App() {
   return (
     <>
-      {/* Ambient background elements */}
-      <div className="bg-blobs">
-        <div className="blob one"></div>
-        <div className="blob two"></div>
-      </div>
-
+      <CustomCursor />
       <Navbar />
       <Hero />
-      <Projects />
+      <div className="section-divider"></div>
       <About />
+      <div className="section-divider"></div>
+      <Projects />
+      <div className="section-divider"></div>
       <Skills />
+      <div className="section-divider"></div>
       <Experience />
+      <div className="section-divider"></div>
       <Contact />
-      <Footer />
     </>
   );
 }
