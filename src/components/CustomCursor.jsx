@@ -1,12 +1,22 @@
 import { useEffect, useState } from "react";
+import { motion, useMotionValue, useSpring } from "framer-motion";
 
 export default function CustomCursor() {
-    const [position, setPosition] = useState({ x: 0, y: 0 });
-    const [isPointer, setIsPointer] = useState(false);
+    const [cursorVariant, setCursorVariant] = useState("default");
     const [isMobile, setIsMobile] = useState(false);
+    const [isClicking, setIsClicking] = useState(false);
+    const [cursorHeight, setCursorHeight] = useState(24);
+
+    // Mouse position
+    const mouseX = useMotionValue(-100);
+    const mouseY = useMotionValue(-100);
+
+    // Smooth spring for movement
+    const springConfig = { damping: 25, stiffness: 400, mass: 0.2 };
+    const cursorX = useSpring(mouseX, springConfig);
+    const cursorY = useSpring(mouseY, springConfig);
 
     useEffect(() => {
-        // Check if device is mobile
         const checkMobile = () => {
             const mobile = window.innerWidth < 1024 ||
                 ('ontouchstart' in window) ||
@@ -17,105 +27,162 @@ export default function CustomCursor() {
         checkMobile();
         window.addEventListener('resize', checkMobile);
 
-        const updatePosition = (e) => {
-            setPosition({ x: e.clientX, y: e.clientY });
+        const moveCursor = (e) => {
+            mouseX.set(e.clientX);
+            mouseY.set(e.clientY);
         };
 
-        const updateCursorType = (e) => {
+        const handleMouseOver = (e) => {
             const target = e.target;
+
+            // Interactive elements
             const isClickable =
                 target.tagName === 'A' ||
                 target.tagName === 'BUTTON' ||
                 target.closest('a') ||
                 target.closest('button') ||
-                target.onclick ||
+                target.closest('.project-card') ||
+                target.closest('.hero-cta') ||
                 window.getComputedStyle(target).cursor === 'pointer';
 
-            setIsPointer(isClickable);
+            // Text elements
+            const computedStyle = window.getComputedStyle(target);
+            const isText =
+                target.tagName === 'P' ||
+                target.tagName === 'SPAN' ||
+                target.tagName === 'H1' ||
+                target.tagName === 'H2' ||
+                target.tagName === 'H3' ||
+                target.tagName === 'H4' ||
+                target.tagName === 'H5' ||
+                target.tagName === 'H6' ||
+                target.tagName === 'INPUT' ||
+                target.tagName === 'TEXTAREA' ||
+                target.closest('code') ||
+                target.closest('pre') ||
+                computedStyle.cursor === 'text';
+
+            if (isClickable) {
+                setCursorVariant("hover");
+            } else if (isText) {
+                setCursorVariant("text");
+                const fontSize = parseFloat(computedStyle.fontSize);
+                const newHeight = Math.min(Math.max(fontSize * 1.2, 16), 80);
+                setCursorHeight(newHeight);
+            } else {
+                setCursorVariant("default");
+            }
         };
 
-        window.addEventListener('mousemove', updatePosition);
-        window.addEventListener('mouseover', updateCursorType);
+        const handleMouseDown = () => setIsClicking(true);
+        const handleMouseUp = () => setIsClicking(false);
+
+        window.addEventListener('mousemove', moveCursor);
+        window.addEventListener('mouseover', handleMouseOver);
+        window.addEventListener('mousedown', handleMouseDown);
+        window.addEventListener('mouseup', handleMouseUp);
 
         return () => {
-            window.removeEventListener('mousemove', updatePosition);
-            window.removeEventListener('mouseover', updateCursorType);
+            window.removeEventListener('mousemove', moveCursor);
+            window.removeEventListener('mouseover', handleMouseOver);
+            window.removeEventListener('mousedown', handleMouseDown);
+            window.removeEventListener('mouseup', handleMouseUp);
             window.removeEventListener('resize', checkMobile);
         };
     }, []);
 
-    // Don't render on mobile
-    if (isMobile) {
-        return null;
-    }
+    if (isMobile) return null;
 
     return (
-        <>
-            {/* Outer ring */}
-            <div
-                style={{
-                    position: 'fixed',
-                    left: position.x,
-                    top: position.y,
-                    width: isPointer ? '50px' : '35px',
-                    height: isPointer ? '50px' : '35px',
-                    border: `2px solid ${isPointer ? '#C792EA' : '#82AAFF'}`,
-                    borderRadius: '50%',
-                    pointerEvents: 'none',
-                    zIndex: 9999,
-                    transform: 'translate(-50%, -50%)',
-                    transition: 'width 0.2s ease, height 0.2s ease, border-color 0.2s ease',
-                    mixBlendMode: 'difference',
-                    opacity: 0.8
+        <motion.div
+            style={{
+                translateX: cursorX,
+                translateY: cursorY,
+                position: "fixed",
+                top: 0,
+                left: 0,
+                pointerEvents: "none",
+                zIndex: 9999
+            }}
+        >
+            {/* Default State: Sleek Arrow (Restored) */}
+            <motion.div
+                animate={{
+                    scale: cursorVariant === "default" ? 1 : 0,
+                    opacity: cursorVariant === "default" ? 1 : 0,
                 }}
-            />
-
-            {/* Inner dot */}
-            <div
+                transition={{ duration: 0.2 }}
                 style={{
-                    position: 'fixed',
-                    left: position.x,
-                    top: position.y,
-                    width: isPointer ? '10px' : '6px',
-                    height: isPointer ? '10px' : '6px',
-                    backgroundColor: isPointer ? '#C792EA' : '#82AAFF',
-                    borderRadius: '50%',
-                    pointerEvents: 'none',
-                    zIndex: 10000,
-                    transform: 'translate(-50%, -50%)',
-                    transition: 'width 0.2s ease, height 0.2s ease, background-color 0.2s ease',
-                    boxShadow: `0 0 15px ${isPointer ? '#C792EA' : '#82AAFF'}`
+                    position: 'absolute',
+                    top: 0,
+                    left: 0
                 }}
-            />
+            >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    {/* Shadow for visibility */}
+                    <path d="M3 3L10.07 19.97L12.58 12.58L19.97 10.07L3 3Z" fill="rgba(0,0,0,0.3)" transform="translate(1,1)" />
+                    {/* Main Arrow */}
+                    <path d="M3 3L10.07 19.97L12.58 12.58L19.97 10.07L3 3Z" fill="#89DDFF" stroke="#C792EA" strokeWidth="1.5" strokeLinejoin="round" />
+                </svg>
+            </motion.div>
 
-            {/* Cursor trail effect */}
-            <div
+            {/* Hover State: Expanding Circle + Arrow */}
+            <motion.div
+                animate={{
+                    width: cursorVariant === "hover" ? 48 : 0,
+                    height: cursorVariant === "hover" ? 48 : 0,
+                    x: -24,
+                    y: -24,
+                    opacity: cursorVariant === "hover" ? 1 : 0,
+                    backgroundColor: "rgba(137, 221, 255, 0.1)",
+                    border: "1px solid #89DDFF",
+                }}
+                transition={{ duration: 0.3, type: "spring" }}
                 style={{
-                    position: 'fixed',
-                    left: position.x,
-                    top: position.y,
-                    width: isPointer ? '50px' : '35px',
-                    height: isPointer ? '50px' : '35px',
-                    background: `radial-gradient(circle, ${isPointer ? '#C792EA' : '#82AAFF'}30, transparent 70%)`,
-                    borderRadius: '50%',
-                    pointerEvents: 'none',
-                    zIndex: 9998,
-                    transform: 'translate(-50%, -50%)',
-                    transition: 'width 0.3s ease, height 0.3s ease',
-                    opacity: isPointer ? 0.6 : 0.3
+                    borderRadius: "50%",
+                    position: "absolute",
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    pointerEvents: 'none'
                 }}
-            />
+            >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="7" y1="17" x2="17" y2="7" stroke="#89DDFF" strokeWidth="2" strokeLinecap="round" />
+                    <polyline points="7 7 17 7 17 17" stroke="#89DDFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+            </motion.div>
 
-            {/* Hide default cursor */}
-            <style>{`
-        *, *::before, *::after {
-          cursor: none !important;
-        }
-        
-        a, button, [role="button"], input[type="submit"], input[type="button"] {
-          cursor: none !important;
-        }
-      `}</style>
-        </>
+            {/* Text State: Cyber I-Beam */}
+            <motion.div
+                animate={{
+                    scale: cursorVariant === "text" ? 1 : 0.5,
+                    opacity: cursorVariant === "text" ? 1 : 0,
+                    height: cursorVariant === "text" ? cursorHeight : 10
+                }}
+                transition={{ duration: 0.2 }}
+                style={{
+                    position: "absolute",
+                    top: -cursorHeight / 2,
+                    left: -2,
+                    width: 4,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center"
+                }}
+            >
+                <svg width="4" height={cursorHeight} viewBox={`0 0 4 ${cursorHeight}`} fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="4" height={cursorHeight} rx="2" fill="#C792EA" />
+                    <rect y={cursorHeight * 0.1} width="4" height={cursorHeight * 0.8} rx="2" fill="#89DDFF" fillOpacity="0.5" />
+                </svg>
+            </motion.div>
+
+            {/* Global cursor hide */}
+            <style jsx global>{`
+                * {
+                    cursor: none !important;
+                }
+            `}</style>
+        </motion.div>
     );
 }

@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
+import HyperText from "./ui/HyperText";
 
 const projects = [
   {
@@ -119,7 +120,9 @@ export default function Projects() {
           flexDirection: 'column',
           height: '80vh',
           maxHeight: '800px',
-          background: '#0F111A', // Darker IDE bg
+          maxHeight: '800px',
+          background: 'rgba(15, 17, 26, 0.95)', // Darker IDE bg with slight transparency
+          borderRadius: '12px',
           borderRadius: '12px',
           overflow: 'hidden',
           border: '1px solid rgba(130, 170, 255, 0.2)',
@@ -130,7 +133,9 @@ export default function Projects() {
         {/* IDE Top Bar */}
         <div style={{
           height: '40px',
-          background: '#1A1C25',
+          height: '40px',
+          background: 'rgba(26, 28, 37, 0.95)',
+          borderBottom: '1px solid #000',
           borderBottom: '1px solid #000',
           display: 'flex',
           alignItems: 'center',
@@ -176,7 +181,7 @@ export default function Projects() {
             textOverflow: 'ellipsis',
             maxWidth: '200px'
           }}>
-            VanshAgrawal — Portfolio — {activeProject.folder}/{activeProject.file}
+            VanshAgrawal — Portfolio — <HyperText text={`${activeProject.folder}/${activeProject.file}`} />
           </div>
         </div>
 
@@ -186,7 +191,9 @@ export default function Projects() {
           {/* Sidebar: Explorer (Desktop & Mobile Drawer) */}
           <div className={`ide-sidebar ${isMobileMenuOpen ? 'mobile-open' : ''}`} style={{
             width: '250px',
-            background: '#13151E',
+            width: '250px',
+            background: 'rgba(19, 21, 30, 0.95)',
+            borderRight: '1px solid #000',
             borderRight: '1px solid #000',
             display: 'flex',
             flexDirection: 'column',
@@ -294,17 +301,17 @@ export default function Projects() {
           </div>
 
           {/* Editor Area */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#0F111A' }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: 'rgba(15, 17, 26, 0.95)' }}>
 
             {/* File Tab */}
             <div style={{
               display: 'flex',
-              background: '#13151E',
+              background: 'rgba(19, 21, 30, 0.95)',
               borderBottom: '1px solid #000'
             }}>
               <div style={{
                 padding: '8px 20px',
-                background: '#0F111A',
+                background: 'rgba(15, 17, 26, 0.95)',
                 color: '#fff',
                 fontSize: '0.85rem',
                 fontFamily: 'var(--font-mono)',

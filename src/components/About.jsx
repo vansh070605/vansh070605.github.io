@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import HyperText from "./ui/HyperText";
 
 export default function About() {
   return (
@@ -19,7 +20,7 @@ export default function About() {
           fontSize: 'clamp(1.8rem, 3vw, 2.5rem)',
           color: '#EEFFFF'
         }}>
-          <span className="keyword">function</span> <span className="function">aboutMe</span>() {'{'}
+          <span className="keyword">function</span> <span className="function"><HyperText text="aboutMe" /></span>() {'{'}
         </h2>
       </motion.div>
 

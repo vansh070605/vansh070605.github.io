@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { useState, useRef } from "react";
 import emailjs from '@emailjs/browser';
+import HyperText from "./ui/HyperText";
 
 export default function Contact() {
     const form = useRef();
@@ -64,7 +65,7 @@ export default function Contact() {
                     color: '#EEFFFF',
                     marginBottom: '10px'
                 }}>
-                    <span className="operator">&gt;_</span> <span className="keyword">function</span> <span className="function">getInTouch</span>() {'{'}
+                    <span className="operator">&gt;_</span> <span className="keyword">function</span> <span className="function"><HyperText text="getInTouch" /></span>() {'{'}
                 </h2>
             </motion.div>
 
@@ -352,22 +353,7 @@ export default function Contact() {
             </motion.p>
 
             {/* Copyright footer */}
-            <motion.div
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                transition={{ duration: 0.8, delay: 0.7 }}
-                viewport={{ once: true }}
-                style={{
-                    marginTop: '60px',
-                    paddingTop: '30px',
-                    borderTop: '1px solid rgba(130, 170, 255, 0.1)',
-                    textAlign: 'center'
-                }}
-            >
-                <span className="comment" style={{ fontSize: '0.85rem' }}>
-          // © {new Date().getFullYear()} Vansh Agrawal · Built with React + Vite
-                </span>
-            </motion.div>
+
 
             {/* Responsive */}
             <style>{`

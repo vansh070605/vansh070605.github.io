@@ -1,5 +1,7 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import HyperText from "./ui/HyperText";
+import Magnetic from "./ui/Magnetic";
 
 export default function Hero() {
   const [mounted, setMounted] = useState(false);
@@ -43,7 +45,7 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.7 }}
         >
-          Hello, I'm <span style={{ color: '#C3E88D' }}>Vansh</span>
+          Hello, I'm <span style={{ color: '#C3E88D' }}><HyperText text="Vansh" /></span>
         </motion.h1>
 
         {/* Subtitle */}
@@ -71,35 +73,39 @@ export default function Hero() {
 
         {/* CTA Buttons */}
         <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', justifyContent: 'center' }}>
-          <motion.a
-            href="#projects"
-            className="hero-cta"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 1.3 }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <span className="function">viewProjects</span>()
-          </motion.a>
+          <Magnetic>
+            <motion.a
+              href="#projects"
+              className="hero-cta"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 1.3 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <span className="function">viewProjects</span>()
+            </motion.a>
+          </Magnetic>
 
-          <motion.a
-            href="/resume.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hero-cta"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 1.4 }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            style={{
-              borderColor: '#C3E88D',
-              color: '#C3E88D'
-            }}
-          >
-            <span className="function">downloadResume</span>()
-          </motion.a>
+          <Magnetic>
+            <motion.a
+              href="/resume.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hero-cta"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 1.4 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              style={{
+                borderColor: '#C3E88D',
+                color: '#C3E88D'
+              }}
+            >
+              <span className="function">downloadResume</span>()
+            </motion.a>
+          </Magnetic>
         </div>
       </div>
 

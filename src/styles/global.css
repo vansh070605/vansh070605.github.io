@@ -62,6 +62,32 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  cursor: none !important;
+
+  /* Global Tech-Static Background */
+  background-color: #05070a;
+  background-image:
+    linear-gradient(0deg, transparent 24%, rgba(0, 255, 255, .03) 25%, rgba(0, 255, 255, .03) 26%, transparent 27%, transparent 74%, rgba(0, 255, 255, .03) 75%, rgba(0, 255, 255, .03) 76%, transparent 77%, transparent),
+    linear-gradient(90deg, transparent 24%, rgba(0, 255, 255, .03) 25%, rgba(0, 255, 255, .03) 26%, transparent 27%, transparent 74%, rgba(0, 255, 255, .03) 75%, rgba(0, 255, 255, .03) 76%, transparent 77%, transparent);
+  background-size: 50px 50px;
+  background-attachment: fixed;
+  /* Force hide default cursor */
+}
+
+/* Aggressively hide cursor on ALL elements */
+*,
+*::before,
+*::after,
+a,
+a:hover,
+button,
+button:hover,
+input,
+label,
+select,
+textarea,
+[role="button"] {
+  cursor: none !important;
 }
 
 /* Smooth scrolling with native CSS */
@@ -399,6 +425,12 @@ a:hover {
 
 .hero-cta:hover::before {
   left: 0;
+}
+
+/* Fix text readability on hover */
+.hero-cta:hover span,
+.hero-cta:hover .function {
+  color: var(--white) !important;
 }
 
 /* Experience section */

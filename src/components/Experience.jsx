@@ -1,222 +1,258 @@
-import { motion } from "framer-motion";
-import { useState, useEffect, useRef } from "react";
+import { motion, useScroll, useTransform, useSpring } from "framer-motion";
+import { useRef } from "react";
+import HyperText from "./ui/HyperText";
 
 const experiences = [
     {
-        cmd: "./role --id=1",
-        time: "2025-NOW",
-        status: "SUCCESS",
-        role: "Technical Developer",
-        company: "RCOTBA Industries",
-        logs: [
-            "Delivered multiple tech projects ahead of schedule",
-            "Optimized high-quality production code",
-            "Collaborated with cross-functional teams"
-        ],
-        tech: ["React", "Node.js", "FullStack"]
+        id: 1,
+        role: "High School (PCM)",
+        company: "A.P.J School NOIDA",
+        date: "2021 - 2023",
+        desc: "Completed Senior Secondary Education with Physics, Chemistry, and Mathematics core curriculum. Score: 88.4%.",
+        tags: ["Physics", "Math", "Calculus"],
+        color: "#FFCB6B"
     },
     {
-        cmd: "./role --id=2",
-        time: "2025-MAR",
-        status: "EXECUTED",
-        role: "Event Coordinator",
-        company: "SRMIST ACM SIGAI",
-        logs: [
-            "Hosted successful AI quiz event on Unstop",
-            "Managed logistics and marketing metrics"
-        ],
-        tech: ["Management", "PublicSpeaking"]
+        id: 2,
+        role: "B.Tech CSE (AI/ML)",
+        company: "SRM IST",
+        date: "2023 - 2027",
+        desc: "Pursuing Bachelor's in Computer Science specializing in Artificial Intelligence and Machine Learning. Current CGPA: 7.7/10.",
+        tags: ["Algorithms", "Data Structures", "AI"],
+        color: "#C792EA"
     },
     {
-        cmd: "./role --id=3",
-        time: "2025-APR",
-        status: "DEPLOYED",
-        role: "AIML Virtual Intern",
-        company: "Virtual Internship",
-        logs: [
-            "Implemented ML models on AWS cloud",
-            "Solved real-world production problems"
-        ],
-        tech: ["AWS", "Python", "ML"]
+        id: 3,
+        role: "Technical Team Member",
+        company: "LiftOff",
+        date: "Mar 2024 - Aug 2024",
+        desc: "Strengthened front-end proficiency and built diverse website clones. Implemented CRUD operations in foundational web applications.",
+        tags: ["HTML5", "CSS3", "JavaScript"],
+        color: "#89DDFF"
     },
     {
-        cmd: "./role --id=4",
-        time: "2024-DEC",
-        status: "BUILT",
+        id: 4,
         role: "Internship Trainee",
         company: "Training Program",
-        logs: [
-            "Built full-stack apps with Flask & SQLite",
-            "Integrated RESTful API architecture"
-        ],
-        tech: ["Python", "Flask", "SQL"]
+        date: "Dec 2024 - Jan 2025",
+        desc: "Built full-stack applications with Flask & SQLite. Integrated RESTful API architecture and developed secure authentication modules.",
+        tags: ["Flask", "SQL", "Rest API"],
+        color: "#89DDFF"
     },
     {
-        cmd: "./education --undergrad",
-        time: "2023-2027",
-        status: "Loading...",
-        role: "B.Tech CSE - AI/ML",
-        company: "SRM IST",
-        logs: [
-            "Specializing in AI/ML",
-            "CGPA: 7.7/10"
-        ],
-        tech: ["Education", "Engineering"]
+        id: 5,
+        role: "Technical Developer",
+        company: "RCOTBA Industries",
+        date: "Jan 2025 - Present",
+        desc: "Leading technical initiatives, optimizing production code, and collaborating with cross-functional teams to deliver high-quality tech projects.",
+        tags: ["React", "Node.js", "System Arch"],
+        color: "#C3E88D"
     },
     {
-        cmd: "./education --highschool",
-        time: "2021-2023",
-        status: "COMPLETED",
-        role: "Class XII - CBSE",
-        company: "A.P.J School NOIDA",
-        logs: [
-            "stream: PCM (Physics, Chem, Math)",
-            "score: 88.4%"
-        ],
-        tech: ["Education", "Science"]
+        id: 6,
+        role: "Event Coordinator",
+        company: "SRMIST ACM SIGAI",
+        date: "Mar 2025 - Oct 2025",
+        desc: "Orchestrated AI symposiums and knowledge transfer events. Managed logistics and marketing metrics for successful campus events.",
+        tags: ["Leadership", "Management", "Public Speaking"],
+        color: "#F07178"
+    },
+    {
+        id: 7,
+        role: "AIML Virtual Intern",
+        company: "Virtual Internship",
+        date: "Apr 2025 - Jun 2025",
+        desc: "Implemented machine learning models on AWS cloud infrastructure. Solved real-world production problems using computer vision.",
+        tags: ["AWS", "Python", "ML"],
+        color: "#82AAFF"
     }
 ];
 
 export default function Experience() {
     return (
-        <section
-            id="experience"
-            style={{
-                padding: '100px 5vw',
-                minHeight: '100vh',
-                background: '#0a0c10',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                fontFamily: "'Fira Code', monospace",
-            }}
-        >
-            <div style={{
-                width: '100%',
-                maxWidth: '1000px',
-                background: '#0C0C0C',
-                borderRadius: '8px',
-                boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
-                border: '1px solid #333',
-                overflow: 'hidden',
-                display: 'flex',
-                flexDirection: 'column'
-            }}>
-                {/* Terminal Header */}
-                <div style={{
-                    background: '#2D2D2D',
-                    padding: '10px 15px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    borderBottom: '1px solid #333'
-                }}>
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                        <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#FF5F56' }}></div>
-                        <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#FFBD2E' }}></div>
-                        <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#27C93F' }}></div>
-                    </div>
-                    <div style={{ marginLeft: '15px', color: '#9DA5B4', fontSize: '0.8rem' }}>
-                        vansh@portfolio: ~/experience
-                    </div>
-                </div>
-
-                {/* Terminal Body */}
-                <div style={{
-                    padding: '20px',
-                    color: '#A9B7C6',
-                    fontSize: '14px',
-                    lineHeight: '1.6',
-                    height: '70vh',
-                    overflowY: 'auto'
-                }} className="terminal-body">
-
-                    <div style={{ marginBottom: '20px' }}>
-                        <span style={{ color: '#98C379' }}>vansh@portfolio</span>:<span style={{ color: '#61AFEF' }}>~</span>$ ./show-experience --verbose
-                    </div>
-
-                    {experiences.map((exp, index) => (
-                        <TerminalEntry key={index} data={exp} delay={index * 1.5} />
-                    ))}
-
-                    {/* Prompt at the bottom */}
-                    <div style={{ marginTop: '20px', display: 'flex', alignItems: 'center' }}>
-                        <span style={{ color: '#98C379' }}>vansh@portfolio</span>:<span style={{ color: '#61AFEF' }}>~</span>$
-                        <motion.span
-                            animate={{ opacity: [0, 1, 0] }}
-                            transition={{ repeat: Infinity, duration: 0.8 }}
-                            style={{
-                                display: 'inline-block',
-                                width: '10px',
-                                height: '18px',
-                                background: '#A9B7C6',
-                                marginLeft: '8px'
-                            }}
-                        />
-                    </div>
-
-                </div>
+        <section id="experience" style={{
+            background: 'transparent', // Transparent to show global static
+            fontFamily: "'Fira Code', monospace",
+            padding: '100px 0',
+            position: 'relative'
+        }}>
+            {/* Header */}
+            <div style={{ textAlign: 'center', marginBottom: '80px', position: 'relative', zIndex: 2 }}>
+                <motion.h2
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    style={{
+                        fontSize: 'clamp(2.5rem, 5vw, 4rem)',
+                        color: '#fff',
+                        marginBottom: '10px',
+                        textShadow: '0 0 20px rgba(255,255,255,0.1)'
+                    }}
+                >
+                    <HyperText text="EXPERIENCE_STACK" />
+                </motion.h2>
+                <p style={{ color: '#546E7A', letterSpacing: '2px' }}>// SCROLL TO DECRYPT //</p>
             </div>
 
-            <style>{`
-        .terminal-body::-webkit-scrollbar {
-          width: 8px;
-        }
-        .terminal-body::-webkit-scrollbar-track {
-          background: #0C0C0C;
-        }
-        .terminal-body::-webkit-scrollbar-thumb {
-          background: #333;
-          border-radius: 4px;
-        }
-      `}</style>
+            <div style={{ padding: '0 5vw' }}>
+                {experiences.map((exp, index) => {
+                    return (
+                        <CardContainer key={index} i={index} data={exp} total={experiences.length} />
+                    )
+                })}
+            </div>
+
+            {/* Spacer for bottom */}
+            {/* Spacer for bottom */}
+            <div style={{ height: '50px' }} />
         </section>
     );
 }
 
-const TerminalEntry = ({ data, delay }) => {
-    const [isVisible, setIsVisible] = useState(false);
+function CardContainer({ i, data, total }) {
+    const containerRef = useRef(null);
 
-    // Simple intersection observer alternative using framer-motion's viewport
+    // Calculate the scroll range for this specific card
+    // We want the card to stick from its calculated top position until it's covered
+    const { scrollYProgress } = useScroll({
+        target: containerRef,
+        offset: ['start end', 'start start']
+    });
+
+    // Create a stack effect using geometric progression
+    // As the card moves up, it scales down slightly to simulate depth
+    const scale = useTransform(scrollYProgress, [0, 1], [1, 1 - (total - i) * 0.05]);
+
+    // Optional: Add opacity fade if user wants old cards to disappear
+    // const opacity = useTransform(scrollYProgress, [0, 1], [1, 0]); 
+
+    return (
+        <div ref={containerRef} style={{
+            height: '80vh', // Each card consumes viewport height to allow scrolling
+            display: 'flex',
+            justifyContent: 'center',
+            position: 'sticky',
+            top: `calc(15vh + ${i * 20}px)`, // Stack them with a slight offset
+        }}>
+            <Card data={data} index={i} />
+        </div>
+    )
+}
+
+function Card({ data, index }) {
     return (
         <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true, margin: "-100px" }}
-            style={{ marginBottom: '25px', paddingLeft: '10px', borderLeft: '2px solid #333' }}
+            initial={{ y: 50, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            style={{
+                width: '100%',
+                maxWidth: '900px',
+                height: '400px',
+                background: 'rgba(12, 12, 15, 0.95)',
+                border: `1px solid ${data.color}40`,
+                borderRadius: '24px',
+                padding: '40px',
+                position: 'relative',
+                overflow: 'hidden',
+                boxShadow: `0 -10px 40px rgba(0,0,0,0.5)`,
+                backdropFilter: 'blur(10px)',
+                transformOrigin: 'top center'
+            }}
         >
-            {/* Command Line */}
-            <div style={{ marginBottom: '5px' }}>
-                <span style={{ color: '#5C6370' }}>&gt;</span> <span style={{ color: '#E5C07B' }}>{data.cmd}</span>
-            </div>
+            {/* Top Border Glow */}
+            <div style={{
+                position: 'absolute', top: 0, left: 0, right: 0, height: '4px',
+                background: `linear-gradient(90deg, transparent, ${data.color}, transparent)`,
+                opacity: 0.8
+            }} />
 
-            {/* Output Block */}
-            <div style={{ paddingLeft: '15px' }}>
-                {/* Role Header */}
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'baseline', marginBottom: '5px' }}>
-                    <span style={{ color: '#56B6C2' }}>[{data.time}]</span>
-                    <span style={{ color: '#98C379', fontWeight: 'bold' }}>{data.status}</span>
-                    <span style={{ color: '#E06C75' }}>"{data.company}"</span>
-                </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', height: '100%', gap: '40px' }}>
 
-                <div style={{ color: '#61AFEF', marginBottom: '5px' }}>
-                    Role: {data.role}
-                </div>
-
-                {/* Logs */}
-                {data.logs.map((log, i) => (
-                    <div key={i} style={{ color: '#ABB2BF', display: 'flex' }}>
-                        <span style={{ color: '#5C6370', marginRight: '8px' }}>+</span>
-                        {log}
+                {/* Left: Visuals */}
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    borderRight: '1px solid rgba(255,255,255,0.05)'
+                }}>
+                    <div style={{ fontSize: '5rem', fontWeight: 'bold', color: 'rgba(255,255,255,0.05)', lineHeight: 1 }}>
+                        0{data.id}
                     </div>
-                ))}
+                    <div style={{
+                        color: data.color,
+                        fontSize: '1.2rem',
+                        marginTop: '-20px',
+                        marginLeft: '10px',
+                        textShadow: `0 0 15px ${data.color}40`
+                    }}>
+                        {data.date}
+                    </div>
+                </div>
 
-                {/* Tech Stack */}
-                <div style={{ marginTop: '5px', color: '#C678DD' }}>
-                    <span>Dependencies: </span>
-                    <span>[{data.tech.join(', ')}]</span>
+                {/* Right: Content */}
+                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                    <h3 style={{ fontSize: '2.5rem', color: '#fff', marginBottom: '10px', lineHeight: 1.1 }}>
+                        {data.role}
+                    </h3>
+                    <div style={{
+                        color: data.color,
+                        fontSize: '1.2rem',
+                        marginBottom: '25px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px'
+                    }}>
+                        <span>@ {data.company}</span>
+                        <div style={{ width: '30px', height: '1px', background: data.color, opacity: 0.5 }} />
+                    </div>
+
+                    <p style={{ color: '#A6ACCD', fontSize: '1.1rem', lineHeight: '1.6', marginBottom: '30px', maxWidth: '90%' }}>
+                        {data.desc}
+                    </p>
+
+                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                        {data.tags.map((tag, i) => (
+                            <span key={i} style={{
+                                padding: '8px 16px',
+                                background: `linear-gradient(90deg, ${data.color}10, transparent)`,
+                                borderLeft: `2px solid ${data.color}`,
+                                color: '#fff',
+                                fontSize: '0.85rem'
+                            }}>
+                                {tag}
+                            </span>
+                        ))}
+                    </div>
                 </div>
             </div>
+
+            {/* Mobile Responsiveness Helper (CSS in JS style) */}
+            <style>{`
+                @media (max-width: 768px) {
+                    div[style*="grid-template-columns"] {
+                        grid-template-columns: 1fr !important;
+                        gap: 20px !important;
+                    }
+                    div[style*="border-right"] {
+                        border-right: none !important;
+                        border-bottom: 1px solid rgba(255,255,255,0.05);
+                        padding-bottom: 20px;
+                        flex-direction: row !important;
+                        align-items: center;
+                        gap: 20px;
+                    }
+                    div[style*="font-size: 5rem"] {
+                        font-size: 3rem !important;
+                    }
+                    h3 { font-size: 1.8rem !important; }
+                    div[style*="height: 400px"] {
+                        height: auto !important;
+                        min-height: 400px;
+                    }
+                }
+            `}</style>
+
         </motion.div>
     );
-};
+}

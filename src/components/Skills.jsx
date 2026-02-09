@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
+import HyperText from "./ui/HyperText";
 
 const skillsByCategory = {
   "AI/ML": [
@@ -91,7 +92,7 @@ export default function Skills() {
           fontSize: 'clamp(1.8rem, 3vw, 2.5rem)',
           color: '#EEFFFF'
         }}>
-          <span className="keyword">const</span> <span className="function">skillRadar</span> = <span className="operator">{'{'}</span>
+          <span className="keyword">const</span> <span className="function"><HyperText text="skillRadar" /></span> = <span className="operator">{'{'}</span>
         </h2>
       </motion.div>
 

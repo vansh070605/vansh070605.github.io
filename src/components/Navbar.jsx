@@ -1,8 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [time, setTime] = useState("");
+
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      setTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+    };
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   const links = [
     { name: "About", href: "#about" },
@@ -14,62 +25,88 @@ export default function Navbar() {
 
   return (
     <>
-      <nav>
-        {/* Logo */}
+      <nav style={{
+        position: 'fixed',
+        top: 0,
+        width: '100%',
+        padding: '20px 40px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        zIndex: 100,
+        background: 'transparent',
+        // backdropFilter: 'blur(8px)',
+        // borderBottom: '1px solid rgba(255, 255, 255, 0.05)'
+      }}>
+        {/* Logo: [ vansh. ] */}
         <motion.div
-          className="nav-logo"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6 }}
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '1rem',
+            color: '#EEFFFF',
+            fontWeight: 600
+          }}
         >
-          <span className="operator">&lt;</span>
-          VA
-          <span className="operator">/&gt;</span>
+          [ vansh. ]
         </motion.div>
 
-        {/* Desktop links */}
+        {/* Right Status Bar (Desktop) */}
         <motion.div
-          className="nav-links"
+          className="nav-status-bar"
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          style={{ display: 'flex' }}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '15px',
+            fontFamily: 'var(--font-mono)',
+            fontSize: '0.85rem',
+            color: '#A6ACCD'
+          }}
         >
-          {links.map((link, index) => (
-            <motion.a
-              key={link.name}
-              href={link.href}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.3 + index * 0.1 }}
-              onClick={() => setMenuOpen(false)}
-            >
-              <span className="operator">.</span>{link.name.toLowerCase()}()
-            </motion.a>
-          ))}
+          <span>India</span>
+          <span style={{ opacity: 0.5 }}>•</span>
+          <span>{time}</span>
+          <span style={{ opacity: 0.5 }}>|</span>
+
+          <motion.a
+            href="/resume.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            whileHover={{ color: '#89DDFF' }}
+            style={{
+              color: '#EEFFFF',
+              textDecoration: 'none',
+              cursor: 'pointer'
+            }}
+          >
+            Résumé
+          </motion.a>
         </motion.div>
 
-        {/* Mobile menu button */}
+        {/* Mobile Menu Button (Only visible on small screens due to CSS) */}
         <motion.button
+          className="mobile-menu-btn"
           onClick={() => setMenuOpen(!menuOpen)}
           style={{
-            display: 'none',
+            display: 'none', // Hidden by default, shown via CSS query
             background: 'transparent',
-            border: '1px solid var(--blue)',
-            color: 'var(--blue)',
-            padding: '8px 16px',
-            fontFamily: 'var(--font-mono)',
-            fontSize: '0.9rem',
-            cursor: 'pointer'
+            border: 'none',
+            color: '#EEFFFF',
+            fontSize: '1rem',
+            cursor: 'pointer',
+            fontFamily: 'var(--font-mono)'
           }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
         >
-          {menuOpen ? 'Close' : 'Menu'}
+          [ Menu ]
         </motion.button>
       </nav>
 
-      {/* Mobile menu overlay */}
+      {/* Mobile Menu Overlay */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
@@ -100,24 +137,47 @@ export default function Navbar() {
                 style={{
                   fontSize: '2rem',
                   fontFamily: 'var(--font-mono)',
-                  color: 'var(--blue)'
+                  color: '#82AAFF',
+                  textDecoration: 'none'
                 }}
                 onClick={() => setMenuOpen(false)}
               >
                 {link.name}
               </motion.a>
             ))}
+            <motion.a
+              href="/resume.pdf"
+              target="_blank"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.5 }}
+              style={{
+                fontSize: '1.2rem',
+                fontFamily: 'var(--font-mono)',
+                color: '#C3E88D',
+                marginTop: '20px',
+                border: '1px solid #C3E88D',
+                padding: '10px 20px',
+                borderRadius: '4px',
+                textDecoration: 'none'
+              }}
+            >
+              Download Résumé
+            </motion.a>
           </motion.div>
         )}
       </AnimatePresence>
 
       <style>{`
         @media (max-width: 768px) {
-          .nav-links {
+          .nav-status-bar {
             display: none !important;
           }
-          nav button {
+          .mobile-menu-btn {
             display: block !important;
+          }
+          nav {
+            padding: 15px 20px !important;
           }
         }
       `}</style>
