@@ -20,7 +20,7 @@ export default function Footer() {
     },
     {
       name: "LinkedIn",
-      url: "https://linkedin.com/in/vansh-agrawal-446757250",
+      url: "https://linkedin.com/in/thevanshagrawal",
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
@@ -31,7 +31,7 @@ export default function Footer() {
     },
     {
       name: "Instagram",
-      url: "https://instagram.com/_vansh__07_",
+      url: "https://instagram.com/thevanshagrawal",
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
@@ -42,7 +42,7 @@ export default function Footer() {
     },
     {
       name: "X (Twitter)",
-      url: "https://x.com/Vansh_0706",
+      url: "https://x.com/vansh070605",
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M4 4l11.733 16h4.267l-11.733 -16z" />

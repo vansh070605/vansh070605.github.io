@@ -12,8 +12,8 @@ const projects = [
     description: "Litter detection and classification system using computer vision and deep learning to identify different types of waste from real-world images.",
     tech: ["Python", "TensorFlow", "Flask", "OpenCV"],
     features: ["Real-time waste detection", "Multi-class classification", "CNN architecture", "Web interface"],
-    github: "https://github.com/vansh070605/LitterVision",
-    live: "#",
+    github: "https://github.com/vansh070605/LitterVision.git",
+    live: "https://litter-vision.onrender.com/",
     color: "#ffcb6b", // Yellow/Gold
     icon: "🐍"
   },
@@ -26,8 +26,8 @@ const projects = [
     description: "Real-time hand gesture recognition system utilizing MediaPipe, OpenCV, and a TensorFlow/Keras deep learning model.",
     tech: ["Python", "OpenCV", "MediaPipe", "TensorFlow"],
     features: ["Hand tracking", "Gesture classification", "Low-latency", "Custom training"],
-    github: "https://github.com/vansh070605/Hand-Gesture-Recognition",
-    live: "#",
+    github: "https://github.com/vansh070605/MULTI-GESTURE-DETECTOR.git",
+    live: "https://www.linkedin.com/posts/thevanshagrawal_opencv-tensorflow-gesturerecognition-activity-7316212483638104064-kcqE?utm_source=share&utm_medium=member_desktop&rcm=ACoAAElgtr8B7dVS55CHuurhiU8Y2ZcdqDhYU-k",
     color: "#c792ea", // Purple
     icon: "🐍"
   },
@@ -40,8 +40,8 @@ const projects = [
     description: "Web application for predicting lung cancer risk using machine learning, featuring a sleek glassmorphism UI.",
     tech: ["Python", "Flask", "Scikit-learn", "MySQL"],
     features: ["Risk assessment", "User auth", "History tracking", "Dashboard"],
-    github: "https://github.com/vansh070605/Lung-Cancer-Predictor",
-    live: "#",
+    github: "https://github.com/vansh070605/LUNG-CANCER-PREDICTOR.git",
+    live: "https://lung-cancer-predictor-idq6.onrender.com/",
     color: "#f07178", // Red
     icon: "🐍"
   },
@@ -54,8 +54,8 @@ const projects = [
     description: "Real-time WebRTC application for peer-to-peer voice, video, and screen sharing with Socket.io integration.",
     tech: ["Node.js", "WebRTC", "Socket.io", "React"],
     features: ["P2P video calls", "Screen sharing", "Real-time chat", "No servers"],
-    github: "https://github.com/vansh070605/Voxera",
-    live: "#",
+    github: "https://github.com/vansh070605/Voxera.git",
+    live: "https://voxera-rtc.netlify.app/",
     color: "#82aaff", // Blue
     icon: "📜"
   },
@@ -68,7 +68,7 @@ const projects = [
     description: "Explainable career recommendation engine mapping student profiles to ranked career suggestions.",
     tech: ["React", "Python", "Flask", "ML"],
     features: ["Profile analysis", "Career matching", "Explainable AI", "Guidance"],
-    github: "https://github.com/vansh070605/Career-Path-Explorer",
+    github: "https://github.com/vansh070605/Career-Path-Explorer.git",
     live: "#",
     color: "#c3e88d", // Green
     icon: "⚛️"
@@ -76,14 +76,14 @@ const projects = [
   {
     id: 6,
     name: "EmployeeTrack",
-    file: "tracker_system.ts",
+    file: "employee_track.ts",
     category: "Full-Stack",
     folder: "full-stack",
     description: "Employee work session tracking system with secure authentication and productivity analytics.",
     tech: ["Node.js", "MongoDB", "Express", "JWT"],
     features: ["Session mgmt", "Productivity reports", "Admin panel", "Security"],
-    github: "https://github.com/vansh070605/track-employee-work",
-    live: "#",
+    github: "https://github.com/vansh070605/EMPLOYEE-DASHBOARD.git",
+    live: "https://kanban-employee-dashboard.vercel.app/",
     color: "#89ddff", // Cyan
     icon: "🔷"
   }
@@ -120,9 +120,7 @@ export default function Projects() {
           flexDirection: 'column',
           height: '80vh',
           maxHeight: '800px',
-          maxHeight: '800px',
           background: 'rgba(15, 17, 26, 0.95)', // Darker IDE bg with slight transparency
-          borderRadius: '12px',
           borderRadius: '12px',
           overflow: 'hidden',
           border: '1px solid rgba(130, 170, 255, 0.2)',
@@ -133,9 +131,7 @@ export default function Projects() {
         {/* IDE Top Bar */}
         <div style={{
           height: '40px',
-          height: '40px',
           background: 'rgba(26, 28, 37, 0.95)',
-          borderBottom: '1px solid #000',
           borderBottom: '1px solid #000',
           display: 'flex',
           alignItems: 'center',
@@ -191,9 +187,7 @@ export default function Projects() {
           {/* Sidebar: Explorer (Desktop & Mobile Drawer) */}
           <div className={`ide-sidebar ${isMobileMenuOpen ? 'mobile-open' : ''}`} style={{
             width: '250px',
-            width: '250px',
             background: 'rgba(19, 21, 30, 0.95)',
-            borderRight: '1px solid #000',
             borderRight: '1px solid #000',
             display: 'flex',
             flexDirection: 'column',

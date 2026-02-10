@@ -41,7 +41,7 @@ const experiences = [
     },
     {
         id: 5,
-        role: "Technical Developer",
+        role: "Technical Manager",
         company: "RCOTBA Industries",
         date: "Jan 2025 - Present",
         desc: "Leading technical initiatives, optimizing production code, and collaborating with cross-functional teams to deliver high-quality tech projects.",

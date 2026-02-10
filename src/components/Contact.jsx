@@ -142,7 +142,7 @@ export default function Contact() {
                             color: '#EEFFFF',
                             margin: 0
                         }}>
-                            India
+                            Chennai, India
                         </p>
                     </motion.div>
 
