@@ -146,7 +146,7 @@ export default function Navbar() {
               </motion.a>
             ))}
             <motion.a
-              href="/resume.pdf"
+              href="/Vansh_Agrawal_Resume.pdf"
               target="_blank"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
