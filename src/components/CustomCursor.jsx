@@ -32,8 +32,12 @@ export default function CustomCursor() {
             mouseY.set(e.clientY);
         };
 
+        let lastTarget = null;
+        
         const handleMouseOver = (e) => {
             const target = e.target;
+            if (target === lastTarget) return;
+            lastTarget = target;
 
             // Interactive elements
             const isClickable =
@@ -42,11 +46,9 @@ export default function CustomCursor() {
                 target.closest('a') ||
                 target.closest('button') ||
                 target.closest('.project-card') ||
-                target.closest('.hero-cta') ||
-                window.getComputedStyle(target).cursor === 'pointer';
+                target.closest('.hero-cta');
 
             // Text elements
-            const computedStyle = window.getComputedStyle(target);
             const isText =
                 target.tagName === 'P' ||
                 target.tagName === 'SPAN' ||
@@ -59,16 +61,20 @@ export default function CustomCursor() {
                 target.tagName === 'INPUT' ||
                 target.tagName === 'TEXTAREA' ||
                 target.closest('code') ||
-                target.closest('pre') ||
-                computedStyle.cursor === 'text';
+                target.closest('pre');
 
             if (isClickable) {
                 setCursorVariant("hover");
             } else if (isText) {
                 setCursorVariant("text");
-                const fontSize = parseFloat(computedStyle.fontSize);
-                const newHeight = Math.min(Math.max(fontSize * 1.2, 16), 80);
-                setCursorHeight(newHeight);
+                try {
+                    const computedStyle = window.getComputedStyle(target);
+                    const fontSize = parseFloat(computedStyle.fontSize);
+                    const newHeight = Math.min(Math.max(fontSize * 1.2, 16), 80);
+                    setCursorHeight(newHeight);
+                } catch (e) {
+                    setCursorHeight(24);
+                }
             } else {
                 setCursorVariant("default");
             }
@@ -102,7 +108,8 @@ export default function CustomCursor() {
                 top: 0,
                 left: 0,
                 pointerEvents: "none",
-                zIndex: 9999
+                zIndex: 9999,
+                willChange: "transform"
             }}
         >
             {/* Default State: Sleek Arrow (Restored) */}

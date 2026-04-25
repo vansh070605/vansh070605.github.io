@@ -89,7 +89,7 @@ export default function Hero() {
 
           <Magnetic>
             <motion.a
-              href="/resume.pdf"
+              href="/Vansh_Agrawal_Resume.pdf"
               target="_blank"
               rel="noopener noreferrer"
               className="hero-cta"

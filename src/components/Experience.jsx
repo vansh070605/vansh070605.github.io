@@ -4,21 +4,30 @@ import HyperText from "./ui/HyperText";
 
 const experiences = [
     {
-        id: 1,
-        role: "High School (PCM)",
+        id: 0,
+        role: "High School",
         company: "A.P.J School NOIDA",
-        date: "2021 - 2023",
-        desc: "Completed Senior Secondary Education with Physics, Chemistry, and Mathematics core curriculum. Score: 88.4%.",
-        tags: ["Physics", "Math", "Calculus"],
+        date: "2020 - 2021",
+        desc: "Completed High School Education with Mathematics and Science core curriculum. Score: 85.2%.",
+        tags: ["Mathematics", "Science"],
+        color: "#18FF6A"
+    },
+    {
+        id: 1,
+        role: "Senior Secondary School",
+        company: "A.P.J School NOIDA",
+        date: "2022 - 2023",
+        desc: "Completed Senior Secondary Education with Physics, Chemistry, and Mathematics core curriculum. Score: 68.4%.",
+        tags: ["Physics", "Chemistry", "Mathematics"],
         color: "#FFCB6B"
     },
     {
         id: 2,
         role: "B.Tech CSE (AI/ML)",
         company: "SRM IST",
-        date: "2023 - 2027",
-        desc: "Pursuing Bachelor's in Computer Science specializing in Artificial Intelligence and Machine Learning. Current CGPA: 7.7/10.",
-        tags: ["Algorithms", "Data Structures", "AI"],
+        date: "Jul 2023 - Present",
+        desc: "Pursuing Bachelor's in Computer Science specializing in Artificial Intelligence and Machine Learning. Current CGPA: 7.78/10.",
+        tags: ["Algorithms", "Data Structures", "AI", "ML"],
         color: "#C792EA"
     },
     {
@@ -33,20 +42,20 @@ const experiences = [
     {
         id: 4,
         role: "Internship Trainee",
-        company: "Training Program",
-        date: "Dec 2024 - Jan 2025",
-        desc: "Built full-stack applications with Flask & SQLite. Integrated RESTful API architecture and developed secure authentication modules.",
-        tags: ["Flask", "SQL", "Rest API"],
-        color: "#89DDFF"
+        company: "Digital Info Solutions Pvt. Ltd.",
+        date: "Dec 2024",
+        desc: "Worked on building full-stack applications using Flask and SQLite. Developed secure authentication modules and integrated RESTful API architecture.",
+        tags: ["Flask", "SQL", "RESTful API"],
+        color: "#C3E88D"
     },
     {
         id: 5,
-        role: "Technical Manager",
+        role: "Internship",
         company: "RCOTBA Industries",
-        date: "Jan 2025 - Present",
+        date: "Jan 2025 - Jun 2025",
         desc: "Leading technical initiatives, optimizing production code, and collaborating with cross-functional teams to deliver high-quality tech projects.",
         tags: ["React", "Node.js", "System Arch"],
-        color: "#C3E88D"
+        color: "#89DDFF"
     },
     {
         id: 6,
@@ -59,13 +68,13 @@ const experiences = [
     },
     {
         id: 7,
-        role: "AIML Virtual Intern",
-        company: "Virtual Internship",
-        date: "Apr 2025 - Jun 2025",
-        desc: "Implemented machine learning models on AWS cloud infrastructure. Solved real-world production problems using computer vision.",
-        tags: ["AWS", "Python", "ML"],
-        color: "#82AAFF"
-    }
+        role: "AI/ML Intern",
+        company: "Tata Steel",
+        date: "Nov 2025 - Present",
+        desc: "Engineered a Computer Vision pipeline using OpenCV for automated TMT rebar quality control, calculating height, width, and pitch of ribs with 95% precision to evaluate strict pass/fail tolerances.",
+        tags: ["Computer Vision", "OpenCV", "Machine Learning"],
+        color: "#89DDFF"
+    },
 ];
 
 export default function Experience() {

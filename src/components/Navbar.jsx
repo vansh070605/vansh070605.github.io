@@ -74,7 +74,7 @@ export default function Navbar() {
           <span style={{ opacity: 0.5 }}>|</span>
 
           <motion.a
-            href="/resume.pdf"
+            href="/Vansh_Agrawal_Resume.pdf"
             target="_blank"
             rel="noopener noreferrer"
             whileHover={{ color: '#89DDFF' }}

@@ -4,7 +4,6 @@ import HyperText from "./ui/HyperText";
 export default function About() {
   return (
     <section className="about" id="about">
-      {/* Section header */}
       <motion.div
         className="section-header"
         initial={{ opacity: 0, y: 30 }}
@@ -13,7 +12,7 @@ export default function About() {
         viewport={{ once: true }}
       >
         <p className="comment" style={{ fontSize: '0.9rem', marginBottom: '10px' }}>
-          // Personal introduction
+
         </p>
         <h2 style={{
           fontFamily: 'var(--font-mono)',
@@ -24,15 +23,16 @@ export default function About() {
         </h2>
       </motion.div>
 
-      {/* Layout: Circular image left, all content right */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'auto 1fr',
         gap: '60px',
         alignItems: 'start',
-        marginTop: '60px'
+        marginTop: '60px',
+        maxWidth: '1350px', // Increased from 1100px to utilize more screen width
+        margin: '60px auto 0',
+        padding: '0 20px'
       }} className="about-grid">
-        {/* Left: Circular Profile Picture */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           whileInView={{ opacity: 1, scale: 1 }}
@@ -43,13 +43,11 @@ export default function About() {
             flexShrink: 0
           }}
         >
-          {/* Circular image container */}
           <div style={{
             width: '300px',
             height: '300px',
             position: 'relative'
           }}>
-            {/* Gradient border (static) */}
             <div style={{
               position: 'absolute',
               inset: 0,
@@ -77,7 +75,6 @@ export default function About() {
               </div>
             </div>
 
-            {/* Glowing rings */}
             <div style={{
               position: 'absolute',
               inset: '-10px',
@@ -97,77 +94,94 @@ export default function About() {
           </div>
         </motion.div>
 
-        {/* Right: All Content */}
         <motion.div
           initial={{ opacity: 0, x: 30 }}
           whileInView={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
           viewport={{ once: true }}
         >
-          {/* Story */}
-          <div style={{ marginBottom: '40px' }}>
-            <p style={{ fontSize: '1.3rem', marginBottom: '25px', lineHeight: '1.8' }}>
-              I'm a <span style={{ color: '#C792EA', fontWeight: 600 }}>6th semester AIML Engineering student</span> who
-              believes in the power of <span style={{ color: '#82AAFF' }}>intelligent code</span> to solve real-world problems.
+          <div style={{ marginBottom: '40px', color: '#B0BEC5', textAlign: 'justify' }}>
+            <p style={{ fontSize: '1.15rem', marginBottom: '24px', lineHeight: '2' }}>
+              I'm <span style={{ color: '#89DDFF', fontWeight: 600 }}>Vansh Agrawal</span>, a <span style={{ color: '#C792EA', fontWeight: 600 }}>6th-semester AIML Engineering student</span> who believes in the power of <span style={{ color: '#82AAFF', fontWeight: 600 }}>intelligent code</span> to solve real-world problems.
             </p>
 
-            <p style={{ marginBottom: '20px', color: '#EEFFFF', lineHeight: '1.8', fontSize: '1.05rem' }}>
-              My journey started with curiosity about how machines learn and evolved into a passion for building
-              systems that combine <span style={{ color: '#C3E88D' }}>deep learning</span>, <span style={{ color: '#89DDFF' }}>computer vision</span>,
-              and elegant software architecture.
+            <p style={{ fontSize: '1.15rem', marginBottom: '24px', lineHeight: '2' }}>
+              My journey started with curiosity about how machines learn and evolved into a passion for building systems that integrate <span style={{ color: '#C3E88D', fontWeight: 600 }}>deep learning</span>, <span style={{ color: '#89DDFF', fontWeight: 600 }}>computer vision</span>, and <span style={{ color: '#FFCB6B', fontWeight: 600 }}>scalable architecture</span>.
             </p>
 
-            <p style={{ color: '#EEFFFF', lineHeight: '1.8', fontSize: '1.05rem' }}>
-              Currently exploring <span style={{ color: '#FFCB6B' }}>transformers</span>, CNNs, and the art of
-              building scalable web applications. I love turning complex algorithms into clean, maintainable code
-              that actually works in production.
+            <p style={{ fontSize: '1.15rem', lineHeight: '2' }}>
+              Currently exploring <span style={{ color: '#F07178', fontWeight: 600 }}>transformers</span>, CNNs, and the art of building robust web applications. I love turning complex algorithms into clean, maintainable code that actually works in production.
             </p>
           </div>
 
-          {/* Metadata */}
           <div
             style={{
-              padding: '35px',
-              background: 'rgba(130, 170, 255, 0.05)',
-              border: '1px solid rgba(130, 170, 255, 0.2)',
+              background: 'rgba(10, 10, 10, 0.4)',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255, 255, 255, 0.05)',
               borderRadius: '12px',
-              fontFamily: 'var(--font-mono)',
-              fontSize: '1rem',
-              lineHeight: '2'
+              boxShadow: '0 20px 40px rgba(0, 0, 0, 0.4)',
+              overflow: 'hidden'
             }}
           >
-            <div style={{ marginBottom: '15px' }}>
-              <span className="variable">education</span>: <span className="string">"B.Tech CSE w/s in AIML"</span>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '16px 20px',
+              background: 'rgba(255, 255, 255, 0.02)',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.05)'
+            }}>
+              <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#FF5F56' }} />
+              <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#FFBD2E' }} />
+              <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#27C93F' }} />
             </div>
-            <div style={{ marginBottom: '15px' }}>
-              <span className="variable">semester</span>: <span className="number">6</span> / <span className="number">8</span>
-            </div>
-            <div style={{ marginBottom: '15px' }}>
-              <span className="variable">interests</span>: [<br />
-              &nbsp;&nbsp;<span className="string">"Deep Learning"</span>,<br />
-              &nbsp;&nbsp;<span className="string">"Computer Vision"</span>,<br />
-              &nbsp;&nbsp;<span className="string">"Full-Stack"</span><br />
-              ]
-            </div>
-            <div style={{ marginBottom: '15px' }}>
-              <span className="variable">location</span>: <span className="string">"Delhi, India"</span>
-            </div>
-            <div>
-              <span className="variable">status</span>: <span className="string">"Open to opportunities"</span>
+
+            <div style={{
+              padding: '30px',
+              fontFamily: 'var(--font-mono, monospace)',
+              fontSize: '1.05rem',
+              lineHeight: '2.2',
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+              gap: '30px'
+            }}>
+              <div>
+                <div>
+                  <span style={{ color: '#82AAFF' }}>education:</span> <span style={{ color: '#C3E88D' }}>"B.Tech CSE w/s in AIML"</span>
+                </div>
+                <div>
+                  <span style={{ color: '#82AAFF' }}>semester:</span> <span style={{ color: '#F78C6C' }}>"6 / 8"</span>
+                </div>
+                <div>
+                  <span style={{ color: '#82AAFF' }}>location:</span> <span style={{ color: '#C3E88D' }}>"Chennai, India"</span>
+                </div>
+                <div>
+                  <span style={{ color: '#82AAFF' }}>status:</span> <span style={{ color: '#C3E88D' }}>"Open to opportunities"</span>
+                </div>
+              </div>
+
+              <div>
+                <div>
+                  <span style={{ color: '#82AAFF' }}>interests:</span> <span style={{ color: '#EEFFFF' }}>[</span>
+                  <div style={{ paddingLeft: '24px' }}>
+                    <span style={{ color: '#C3E88D' }}>"Deep Learning"</span>,<br />
+                    <span style={{ color: '#C3E88D' }}>"Computer Vision"</span>,<br />
+                    <span style={{ color: '#C3E88D' }}>"Transformers"</span>,<br />
+                    <span style={{ color: '#C3E88D' }}>"Full-Stack"</span>
+                  </div>
+                  <span style={{ color: '#EEFFFF' }}>]</span>
+                </div>
+              </div>
             </div>
           </div>
         </motion.div>
       </div>
 
-      {/* Rotation animation + responsive */}
       <style>{`
         @keyframes rotation {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
         }
 
         @media (max-width: 968px) {

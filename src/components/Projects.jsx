@@ -33,15 +33,15 @@ const projects = [
   },
   {
     id: 3,
-    name: "LungCancerPred",
-    file: "cancer_pred.py",
+    name: "AERIS",
+    file: "aeris.py",
     category: "AI-ML",
     folder: "ai-ml",
-    description: "Web application for predicting lung cancer risk using machine learning, featuring a sleek glassmorphism UI.",
+    description: "AI-driven emergency management platform that replaces reactive disaster response with proactive, ML-powered intelligence, built specifically for Bihar's annual flood crisis.",
     tech: ["Python", "Flask", "Scikit-learn", "MySQL"],
-    features: ["Risk assessment", "User auth", "History tracking", "Dashboard"],
-    github: "https://github.com/vansh070605/LUNG-CANCER-PREDICTOR.git",
-    live: "https://lung-cancer-predictor-idq6.onrender.com/",
+    features: ["Disaster prediction", "Risk assessment", "ML-powered", "Historical analysis"],
+    github: "https://github.com/vansh070605/AERIS.git",
+    live: "#",
     color: "#f07178", // Red
     icon: "🐍"
   },

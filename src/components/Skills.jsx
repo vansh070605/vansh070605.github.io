@@ -18,6 +18,12 @@ const skillsByCategory = {
     { name: "Flask", level: 88 },
     { name: "HTML/CSS", level: 95 }
   ],
+  "OpenCV": [
+    { name: "Python", level: 95 },
+    { name: "OpenCV", level: 90 },
+    { name: "NumPy", level: 92 },
+    { name: "Pandas", level: 90 }
+  ],
   "Tools": [
     { name: "Git", level: 90 },
     { name: "Linux", level: 85 },
@@ -28,7 +34,8 @@ const skillsByCategory = {
 
 const categoryColors = {
   "AI/ML": "#C792EA",
-  "Web Dev": "#82AAFF",
+  "Web Dev": "#FF8EDC",
+  "OpenCV": "#82AAFF",
   "Tools": "#C3E88D"
 };
 
@@ -111,7 +118,7 @@ export default function Skills() {
         }}
         className="skills-filters"
       >
-        {["All", "AI/ML", "Web Dev", "Tools"].map((category) => (
+        {["All", "AI/ML", "Web Dev", "Tools", "OpenCV"].map((category) => (
           <button
             key={category}
             onClick={() => setSelectedCategory(category)}
