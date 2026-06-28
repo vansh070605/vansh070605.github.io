@@ -6,18 +6,18 @@ import Magnetic from "./ui/Magnetic";
 
 const EASE = [0.33, 1, 0.68, 1];
 
-const SERVICE_ID  = "service_si7f718";
+const SERVICE_ID = "service_si7f718";
 const TEMPLATE_ID = "template_p1t8lmh";
-const PUBLIC_KEY  = "pngCmIUDAWre8sQXg";
+const PUBLIC_KEY = "pngCmIUDAWre8sQXg";
 
 const SOCIALS = [
-  { name: "GitHub",   handle: "@vansh070605",   url: "https://github.com/vansh070605",          emoji: "⌥", id: "contact-social-github"   },
+  { name: "GitHub", handle: "@vansh070605", url: "https://github.com/vansh070605", emoji: "⌥", id: "contact-social-github" },
   { name: "LinkedIn", handle: "thevanshagrawal", url: "https://linkedin.com/in/thevanshagrawal", emoji: "in", id: "contact-social-linkedin" },
-  { name: "X",        handle: "@vansh070605",   url: "https://x.com/vansh070605",               emoji: "𝕏", id: "contact-social-x"        },
+  { name: "X", handle: "@vansh070605", url: "https://x.com/vansh070605", emoji: "𝕏", id: "contact-social-x" },
 ];
 
 const onFocus = (e) => { e.target.style.borderColor = "var(--accent)"; e.target.style.boxShadow = "0 0 0 3px rgba(79,70,229,0.12)"; };
-const onBlur  = (e) => { e.target.style.borderColor = "var(--border)";  e.target.style.boxShadow = "none"; };
+const onBlur = (e) => { e.target.style.borderColor = "var(--border)"; e.target.style.boxShadow = "none"; };
 
 /* ── Hover-sweep social card ── */
 function SocialCard({ s, index }) {
@@ -30,8 +30,8 @@ function SocialCard({ s, index }) {
   const onMove = (e) => {
     if (!cardRef.current) return;
     const r = cardRef.current.getBoundingClientRect();
-    x.set((e.clientX - (r.left + r.width  / 2)) * 0.18);
-    y.set((e.clientY - (r.top  + r.height / 2)) * 0.18);
+    x.set((e.clientX - (r.left + r.width / 2)) * 0.18);
+    y.set((e.clientY - (r.top + r.height / 2)) * 0.18);
   };
 
   return (
@@ -77,8 +77,8 @@ function SocialCard({ s, index }) {
 export default function Contact() {
   const form = useRef();
   const [isLoading, setIsLoading] = useState(false);
-  const [sent, setSent]           = useState(false);
-  const [formData, setFormData]   = useState({ name: "", email: "", message: "" });
+  const [sent, setSent] = useState(false);
+  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -192,8 +192,8 @@ export default function Contact() {
               {/* Name + Email — side by side on sm+ */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {[
-                  { label: "Your Name", type: "text",  name: "user_name",  ph: "John Doe",        field: "name",  id: "contact-name-input",  delay: 0.28 },
-                  { label: "Email",     type: "email", name: "user_email", ph: "you@example.com", field: "email", id: "contact-email-input", delay: 0.36 },
+                  { label: "Your Name", type: "text", name: "user_name", ph: "Enter your name", field: "name", id: "contact-name-input", delay: 0.28 },
+                  { label: "Email", type: "email", name: "user_email", ph: "Enter your email", field: "email", id: "contact-email-input", delay: 0.36 },
                 ].map((f) => (
                   <motion.div
                     key={f.id}
