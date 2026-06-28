@@ -174,7 +174,7 @@ export default function About() {
               transition={{ duration: 0.85, ease: EASE, delay: 0.1 }}
             >
               <p style={{ fontSize: "clamp(0.95rem, 1.5vw, 1.1rem)", lineHeight: 1.8, color: "var(--text-muted)" }}>
-                I'm <strong style={{ color: "var(--text)", fontWeight: 700 }}>Vansh Agrawal</strong> — a 6th-semester AIML Engineering student at SRM IST, Chennai.
+                I'm <strong style={{ color: "var(--text)", fontWeight: 700 }}>Vansh Agrawal</strong> — a 7th-semester AIML Engineering student at SRM IST, Chennai.
                 I believe in turning intelligent algorithms into real products. Currently deep in{" "}
                 <span style={{ color: "var(--accent)", fontWeight: 600 }}>transformers</span>,{" "}
                 <span style={{ color: "#f43f5e", fontWeight: 600 }}>computer vision</span>, and{" "}
