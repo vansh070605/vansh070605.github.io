@@ -1,20 +1,20 @@
-import { useRef }          from "react";
+import { useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { motion }           from "framer-motion";
+import { motion } from "framer-motion";
 import { MaskReveal, FadeReveal } from "./ui/TextReveal";
-import Magnetic              from "./ui/Magnetic";
+import Magnetic from "./ui/Magnetic";
 
 /* ── Three.js rotating wireframe orb ───────────────────────────── */
 function FloatingOrb() {
   const meshRef = useRef();
-  const t       = useRef(0);
+  const t = useRef(0);
 
   useFrame((_, delta) => {
     t.current += delta * 0.28;
     if (!meshRef.current) return;
     meshRef.current.rotation.x += delta * 0.07;
     meshRef.current.rotation.y += delta * 0.11;
-    meshRef.current.position.y  = Math.sin(t.current) * 0.35;
+    meshRef.current.position.y = Math.sin(t.current) * 0.35;
   });
 
   return (
@@ -75,13 +75,13 @@ export default function Hero() {
           <div className="overflow-hidden block">
             <motion.span
               style={{
-                display:       "block",
-                fontFamily:    "var(--font-sans)",
-                fontSize:      "clamp(2.2rem, 7vw, 5.5rem)",
-                fontWeight:    800,
+                display: "block",
+                fontFamily: "var(--font-sans)",
+                fontSize: "clamp(2.2rem, 7vw, 5.5rem)",
+                fontWeight: 800,
                 letterSpacing: "-0.03em",
-                color:         "var(--text)",
-                lineHeight:    1.05,
+                color: "var(--text)",
+                lineHeight: 1.05,
               }}
               initial={{ y: "110%" }}
               animate={{ y: "0%" }}
@@ -96,10 +96,10 @@ export default function Hero() {
             <motion.span
               className="display-text"
               style={{
-                display:       "block",
-                fontSize:      "clamp(3rem, 12vw, 10rem)",
-                color:         "var(--accent)",
-                lineHeight:    0.95,
+                display: "block",
+                fontSize: "clamp(3rem, 12vw, 10rem)",
+                color: "var(--accent)",
+                lineHeight: 0.95,
                 letterSpacing: "-0.04em",
               }}
               initial={{ y: "110%" }}
@@ -158,10 +158,10 @@ export default function Hero() {
           <FadeReveal delay={0.55} style={{ marginBottom: "2.5rem" }} animateOnMount={true}>
             <p
               style={{
-                fontSize:  "clamp(1rem, 2vw, 1.2rem)",
-                color:     "var(--text-muted)",
+                fontSize: "clamp(1rem, 2vw, 1.2rem)",
+                color: "var(--text-muted)",
                 lineHeight: 1.8,
-                maxWidth:  "520px",
+                maxWidth: "520px",
               }}
             >
               6th-semester AIML Engineering student passionate about deep
@@ -192,7 +192,7 @@ export default function Hero() {
 
               <Magnetic strength={0.3} radius={80}>
                 <a
-                  href="/Vansh_Agrawal_Resume.pdf"
+                  href="/Resume.pdf"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn-outline"
@@ -210,9 +210,9 @@ export default function Hero() {
               <span className="label-text" style={{ fontSize: "0.68rem" }}>FIND ME ON</span>
               <div className="flex gap-4">
                 {[
-                  { label: "GitHub",   url: "https://github.com/vansh070605"        },
+                  { label: "GitHub", url: "https://github.com/vansh070605" },
                   { label: "LinkedIn", url: "https://linkedin.com/in/thevanshagrawal" },
-                  { label: "X",        url: "https://x.com/vansh070605"             },
+                  { label: "X", url: "https://x.com/vansh070605" },
                 ].map((s) => (
                   <Magnetic key={s.label} strength={0.25} radius={60}>
                     <a
@@ -245,7 +245,7 @@ export default function Hero() {
           className="w-[1px] h-12"
           style={{
             background: "linear-gradient(to bottom, var(--text-muted), transparent)",
-            animation:  "float 2s ease-in-out infinite",
+            animation: "float 2s ease-in-out infinite",
           }}
         />
       </motion.div>

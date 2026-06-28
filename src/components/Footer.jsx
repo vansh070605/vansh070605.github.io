@@ -255,7 +255,7 @@ export default function Footer() {
             className="flex items-center gap-3"
           >
             <a
-              href="/Resume - Vansh Agrawal.pdf"
+              href="/Resume.pdf"
               target="_blank"
               rel="noopener noreferrer"
               className="px-6 py-2.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 bg-transparent hover:bg-zinc-900 dark:hover:bg-zinc-100 hover:text-white dark:hover:text-zinc-950"
