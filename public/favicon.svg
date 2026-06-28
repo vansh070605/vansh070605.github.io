@@ -1,4 +1,35 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" fill="#0C0C0C"/>
-  <text x="50%" y="55%" font-family="monospace" font-weight="bold" font-size="32" fill="#4AF626" text-anchor="middle" dominant-baseline="middle">&gt;_</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital,wght@1,600;1,700&amp;display=swap');
+      
+      .circle-bg {
+        fill: #4F46E5; /* Solid Indigo for Light Mode */
+        transition: fill 0.3s;
+      }
+      
+      .logo-text {
+        font-family: 'Instrument Serif', 'Georgia', serif;
+        font-style: italic;
+        font-weight: 700;
+        fill: #FFFFFF;
+        font-size: 270px;
+        text-anchor: middle;
+        dominant-baseline: central;
+      }
+      
+      /* Dark Mode overrides to match the dark theme --accent */
+      @media (prefers-color-scheme: dark) {
+        .circle-bg {
+          fill: #818CF8; /* Light Indigo for Dark Mode */
+        }
+      }
+    </style>
+  </defs>
+  
+  <!-- Outer circle matching the rounded badge brand style -->
+  <circle cx="256" cy="256" r="240" class="circle-bg" />
+  
+  <!-- "VA" Monogram, slightly adjusted to visually center the italicized characters -->
+  <text x="250" y="260" class="logo-text">VA</text>
 </svg>
