@@ -193,7 +193,7 @@ export default function Footer() {
           }}
         >
           <img
-            src="/vansh_cutout copy.png"
+            src="/best_pic.png"
             alt="Vansh Agrawal"
             className="h-[105%] w-auto object-contain object-bottom select-none pointer-events-none"
             style={{

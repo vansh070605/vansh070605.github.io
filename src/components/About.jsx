@@ -133,7 +133,7 @@ export default function About() {
             transition={{ duration: 1.1, ease: EASE }}
           >
             <motion.img
-              src="/vansh_cutout.png"
+              src="/new_photo.png"
               alt="Vansh Agrawal"
               className="w-full h-full object-cover object-top block"
               style={{ minHeight: "380px", y: photoY, scale: 1.1 }}
