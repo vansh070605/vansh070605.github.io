@@ -8,7 +8,7 @@ const STATS = [
   { value: "7.86", label: "CGPA", decimals: 2, suffix: "/10" },
   { value: "8", label: "Projects Built", decimals: 0, suffix: "+" },
   { value: "2", label: "Internships", decimals: 0, suffix: "" },
-  { value: "6", label: "Semester", decimals: 0, suffix: "th" },
+  { value: "7", label: "Semester", decimals: 0, suffix: "th" },
 ];
 
 const TAGS = ["Deep Learning", "Computer Vision", "Transformers", "Full-Stack", "React", "Python", "PyTorch", "Next.js"];
