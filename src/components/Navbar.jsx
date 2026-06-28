@@ -312,7 +312,7 @@ export default function Navbar({ isDark, toggleDark }) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.4 }}
-              href="/Vansh_Agrawal_Resume.pdf"
+              href="/Resume.pdf"
               target="_blank"
               className="btn-outline mt-4 text-base"
               style={{ fontSize: "0.9rem" }}
