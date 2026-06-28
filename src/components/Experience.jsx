@@ -3,14 +3,14 @@ import { motion, useScroll, useTransform, useSpring, useMotionValue } from "fram
 import { MaskReveal, TextReveal } from "./ui/TextReveal";
 
 const experiences = [
-  { id: 0, role: "High School",           company: "A.P.J School NOIDA",              date: "2020 – 2021",        desc: "Completed High School with Mathematics and Science. Score: 85.2%.",          tags: ["Mathematics","Science"],                   color: "#6B8F71" },
-  { id: 1, role: "Senior Secondary",      company: "A.P.J School NOIDA",              date: "2022 – 2023",        desc: "Completed Senior Secondary with PCM curriculum. Score: 68.4%.",             tags: ["Physics","Chemistry","Mathematics"],         color: "#D97706" },
-  { id: 2, role: "B.Tech CSE (AI/ML)",    company: "SRM IST",                         date: "Jul 2023 – Present", desc: "Bachelor's in CS specialising in AI & ML. Current CGPA: 7.78/10.",          tags: ["Algorithms","Data Structures","AI","ML"],   color: "#4F46E5" },
-  { id: 3, role: "Technical Team Member", company: "LiftOff",                          date: "Mar – Aug 2024",     desc: "Strengthened front-end proficiency and built diverse website clones. Implemented CRUD operations.",  tags: ["HTML5","CSS3","JavaScript"],          color: "#0EA5E9" },
-  { id: 4, role: "Internship Trainee",    company: "Digital Info Solutions Pvt. Ltd.", date: "Dec 2024",           desc: "Built full-stack applications with Flask & SQLite. Developed auth modules and RESTful APIs.",         tags: ["Flask","SQL","RESTful API"],          color: "#6B8F71" },
-  { id: 5, role: "Internship",            company: "RCOTBA Industries",                date: "Jan – Jun 2025",     desc: "Led technical initiatives, optimised production code, collaborated cross-functionally.",             tags: ["React","Node.js","System Arch"],      color: "#4F46E5" },
-  { id: 6, role: "Event Coordinator",     company: "SRMIST ACM SIGAI",                date: "Mar – Oct 2025",     desc: "Orchestrated AI symposiums, managed logistics and marketing for campus events.",                     tags: ["Leadership","Management","Speaking"],  color: "#E11D48" },
-  { id: 7, role: "AI/ML Intern",          company: "Tata Steel",                       date: "Nov 2025 – Present", desc: "Engineered a Computer Vision pipeline for automated TMT rebar QC with 95% precision.",               tags: ["Computer Vision","OpenCV","ML"],      color: "#D97706" },
+  { id: 0, role: "High School", company: "A.P.J School NOIDA", date: "2020 – 2021", desc: "Completed High School with Mathematics and Science. Score: 85.2%.", tags: ["Mathematics", "Science"], color: "#6B8F71" },
+  { id: 1, role: "Senior Secondary", company: "A.P.J School NOIDA", date: "2022 – 2023", desc: "Completed Senior Secondary with PCM curriculum. Score: 68.4%.", tags: ["Physics", "Chemistry", "Mathematics"], color: "#D97706" },
+  { id: 2, role: "B.Tech CSE (AI/ML)", company: "SRM IST", date: "Jul 2023 – Present", desc: "Bachelor's in CS specialising in AI & ML. Current CGPA: 7.86/10.", tags: ["Algorithms", "Data Structures", "AI", "ML"], color: "#4F46E5" },
+  { id: 3, role: "Technical Team Member", company: "LiftOff", date: "Mar – Aug 2024", desc: "Strengthened front-end proficiency and built diverse website clones. Implemented CRUD operations.", tags: ["HTML5", "CSS3", "JavaScript"], color: "#0EA5E9" },
+  { id: 4, role: "Internship Trainee", company: "Digital Info Solutions Pvt. Ltd.", date: "Dec 2024", desc: "Built full-stack applications with Flask & SQLite. Developed auth modules and RESTful APIs.", tags: ["Flask", "SQL", "RESTful API"], color: "#6B8F71" },
+  { id: 5, role: "Internship", company: "RCOTBA Industries", date: "Jan – Jun 2025", desc: "Led technical initiatives, optimised production code, collaborated cross-functionally.", tags: ["React", "Node.js", "System Arch"], color: "#4F46E5" },
+  { id: 6, role: "Event Coordinator", company: "SRMIST ACM SIGAI", date: "Mar – Oct 2025", desc: "Orchestrated AI symposiums, managed logistics and marketing for campus events.", tags: ["Leadership", "Management", "Speaking"], color: "#E11D48" },
+  { id: 7, role: "AI/ML Intern", company: "Tata Steel", date: "Nov 2025 – Present", desc: "Engineered a Computer Vision pipeline for automated TMT rebar QC with 95% precision.", tags: ["Computer Vision", "OpenCV", "ML"], color: "#D97706" },
 ];
 
 function getTagEmoji(tag) {
@@ -28,8 +28,8 @@ function getTagEmoji(tag) {
 
 export default function Experience() {
   const containerRef = useRef(null);
-  const trackRef     = useRef(null);
-  const svgRef       = useRef(null);
+  const trackRef = useRef(null);
+  const svgRef = useRef(null);
 
   const [activeYear, setActiveYear] = useState("2020");
   const [trackWidth, setTrackWidth] = useState(0);
@@ -109,12 +109,12 @@ export default function Experience() {
   useEffect(() => {
     const unsubscribeX = bendX.on("change", () => updatePath());
     const unsubscribeY = bendY.on("change", () => updatePath());
-    
+
     function updatePath() {
       const w = trackWidth > 0 ? trackWidth : 3500;
       const bx = bendX.get();
       const by = bendY.get();
-      
+
       // Control coordinates for quadratic bezier bend
       setSvgPath(`M 0 150 Q ${bx} ${by} ${w} 150`);
     }
@@ -130,7 +130,7 @@ export default function Experience() {
     <div id="experience" ref={containerRef} className={`relative bg-cream dark:bg-zinc-950 ${isMobile ? "py-16 h-auto" : "h-[400vh]"}`}>
       {/* Sticky screen container */}
       <div className={`${isMobile ? "flex flex-col gap-12" : "sticky top-0 h-screen overflow-hidden flex flex-col justify-between py-16"}`}>
-        
+
         {/* Header container */}
         <div className="section-container w-full">
           <MaskReveal delay={0} duration={0.7}>
@@ -166,13 +166,13 @@ export default function Experience() {
 
         {/* Horizontal scroll track & elastic string container */}
         <div className="relative flex-grow flex items-center z-10 w-full">
-          
+
           <motion.div
             ref={trackRef}
             style={isMobile ? {} : { x: smoothX }}
             className={`flex w-full ${isMobile ? "flex-col items-center gap-10 px-6" : "items-center gap-16 px-[20vw] relative h-[450px]"}`}
           >
-            
+
             {/* ── Dynamic Elastic Timeline String ── */}
             {!isMobile && (
               <div
@@ -200,7 +200,7 @@ export default function Experience() {
                     strokeWidth="2"
                     className="transition-colors duration-300"
                   />
-                  
+
                   {/* Decorative gradients */}
                   <defs>
                     <linearGradient id="line-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -266,7 +266,7 @@ function TimelineCard({ exp, index, isMobile }) {
     const h = rect.height;
     const mx = e.clientX - rect.left - w / 2;
     const my = e.clientY - rect.top - h / 2;
-    
+
     // Tilt calculations
     x.set(-my / 10);
     y.set(mx / 10);
@@ -297,7 +297,7 @@ function TimelineCard({ exp, index, isMobile }) {
       }}
       className={`relative p-7 rounded-[2rem] bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-md transition-shadow duration-300 w-full max-w-[340px] flex-shrink-0 z-20 flex flex-col justify-between ${isMobile ? "h-auto" : "h-[320px] hover:shadow-2xl cursor-none"}`}
     >
-      
+
       {/* Decorative connecting stem to string (Desktop only) */}
       {!isMobile && (
         <div
