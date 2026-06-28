@@ -1,195 +1,112 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
+import { useCursor } from "../context/CursorContext";
 
 export default function CustomCursor() {
-    const [cursorVariant, setCursorVariant] = useState("default");
-    const [isMobile, setIsMobile] = useState(false);
-    const [isClicking, setIsClicking] = useState(false);
-    const [cursorHeight, setCursorHeight] = useState(24);
+  const { isHovered } = useCursor();
 
-    // Mouse position
-    const mouseX = useMotionValue(-100);
-    const mouseY = useMotionValue(-100);
-
-    // Smooth spring for movement
-    const springConfig = { damping: 25, stiffness: 400, mass: 0.2 };
-    const cursorX = useSpring(mouseX, springConfig);
-    const cursorY = useSpring(mouseY, springConfig);
-
-    useEffect(() => {
-        const checkMobile = () => {
-            const mobile = window.innerWidth < 1024 ||
-                ('ontouchstart' in window) ||
-                (navigator.maxTouchPoints > 0);
-            setIsMobile(mobile);
-        };
-
-        checkMobile();
-        window.addEventListener('resize', checkMobile);
-
-        const moveCursor = (e) => {
-            mouseX.set(e.clientX);
-            mouseY.set(e.clientY);
-        };
-
-        let lastTarget = null;
-        
-        const handleMouseOver = (e) => {
-            const target = e.target;
-            if (target === lastTarget) return;
-            lastTarget = target;
-
-            // Interactive elements
-            const isClickable =
-                target.tagName === 'A' ||
-                target.tagName === 'BUTTON' ||
-                target.closest('a') ||
-                target.closest('button') ||
-                target.closest('.project-card') ||
-                target.closest('.hero-cta');
-
-            // Text elements
-            const isText =
-                target.tagName === 'P' ||
-                target.tagName === 'SPAN' ||
-                target.tagName === 'H1' ||
-                target.tagName === 'H2' ||
-                target.tagName === 'H3' ||
-                target.tagName === 'H4' ||
-                target.tagName === 'H5' ||
-                target.tagName === 'H6' ||
-                target.tagName === 'INPUT' ||
-                target.tagName === 'TEXTAREA' ||
-                target.closest('code') ||
-                target.closest('pre');
-
-            if (isClickable) {
-                setCursorVariant("hover");
-            } else if (isText) {
-                setCursorVariant("text");
-                try {
-                    const computedStyle = window.getComputedStyle(target);
-                    const fontSize = parseFloat(computedStyle.fontSize);
-                    const newHeight = Math.min(Math.max(fontSize * 1.2, 16), 80);
-                    setCursorHeight(newHeight);
-                } catch (e) {
-                    setCursorHeight(24);
-                }
-            } else {
-                setCursorVariant("default");
-            }
-        };
-
-        const handleMouseDown = () => setIsClicking(true);
-        const handleMouseUp = () => setIsClicking(false);
-
-        window.addEventListener('mousemove', moveCursor);
-        window.addEventListener('mouseover', handleMouseOver);
-        window.addEventListener('mousedown', handleMouseDown);
-        window.addEventListener('mouseup', handleMouseUp);
-
-        return () => {
-            window.removeEventListener('mousemove', moveCursor);
-            window.removeEventListener('mouseover', handleMouseOver);
-            window.removeEventListener('mousedown', handleMouseDown);
-            window.removeEventListener('mouseup', handleMouseUp);
-            window.removeEventListener('resize', checkMobile);
-        };
-    }, []);
-
-    if (isMobile) return null;
-
+  /* ── Only show on fine-pointer / wide screens ── */
+  const [isFinePointer, setIsFinePointer] = useState(() => {
+    if (typeof window === "undefined") return false;
     return (
-        <motion.div
-            style={{
-                translateX: cursorX,
-                translateY: cursorY,
-                position: "fixed",
-                top: 0,
-                left: 0,
-                pointerEvents: "none",
-                zIndex: 9999,
-                willChange: "transform"
-            }}
-        >
-            {/* Default State: Sleek Arrow (Restored) */}
-            <motion.div
-                animate={{
-                    scale: cursorVariant === "default" ? 1 : 0,
-                    opacity: cursorVariant === "default" ? 1 : 0,
-                }}
-                transition={{ duration: 0.2 }}
-                style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0
-                }}
-            >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    {/* Shadow for visibility */}
-                    <path d="M3 3L10.07 19.97L12.58 12.58L19.97 10.07L3 3Z" fill="rgba(0,0,0,0.3)" transform="translate(1,1)" />
-                    {/* Main Arrow */}
-                    <path d="M3 3L10.07 19.97L12.58 12.58L19.97 10.07L3 3Z" fill="#89DDFF" stroke="#C792EA" strokeWidth="1.5" strokeLinejoin="round" />
-                </svg>
-            </motion.div>
-
-            {/* Hover State: Expanding Circle + Arrow */}
-            <motion.div
-                animate={{
-                    width: cursorVariant === "hover" ? 48 : 0,
-                    height: cursorVariant === "hover" ? 48 : 0,
-                    x: -24,
-                    y: -24,
-                    opacity: cursorVariant === "hover" ? 1 : 0,
-                    backgroundColor: "rgba(137, 221, 255, 0.1)",
-                    border: "1px solid #89DDFF",
-                }}
-                transition={{ duration: 0.3, type: "spring" }}
-                style={{
-                    borderRadius: "50%",
-                    position: "absolute",
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    pointerEvents: 'none'
-                }}
-            >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <line x1="7" y1="17" x2="17" y2="7" stroke="#89DDFF" strokeWidth="2" strokeLinecap="round" />
-                    <polyline points="7 7 17 7 17 17" stroke="#89DDFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-            </motion.div>
-
-            {/* Text State: Cyber I-Beam */}
-            <motion.div
-                animate={{
-                    scale: cursorVariant === "text" ? 1 : 0.5,
-                    opacity: cursorVariant === "text" ? 1 : 0,
-                    height: cursorVariant === "text" ? cursorHeight : 10
-                }}
-                transition={{ duration: 0.2 }}
-                style={{
-                    position: "absolute",
-                    top: -cursorHeight / 2,
-                    left: -2,
-                    width: 4,
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center"
-                }}
-            >
-                <svg width="4" height={cursorHeight} viewBox={`0 0 4 ${cursorHeight}`} fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="4" height={cursorHeight} rx="2" fill="#C792EA" />
-                    <rect y={cursorHeight * 0.1} width="4" height={cursorHeight * 0.8} rx="2" fill="#89DDFF" fillOpacity="0.5" />
-                </svg>
-            </motion.div>
-
-            {/* Global cursor hide */}
-            <style jsx global>{`
-                * {
-                    cursor: none !important;
-                }
-            `}</style>
-        </motion.div>
+      window.matchMedia("(pointer: fine)").matches &&
+      !window.matchMedia("(max-width: 768px)").matches
     );
+  });
+
+  useEffect(() => {
+    const fineQ   = window.matchMedia("(pointer: fine)");
+    const narrowQ = window.matchMedia("(max-width: 768px)");
+    const update  = () => setIsFinePointer(fineQ.matches && !narrowQ.matches);
+    fineQ.addEventListener("change", update);
+    narrowQ.addEventListener("change", update);
+    return () => { fineQ.removeEventListener("change", update); narrowQ.removeEventListener("change", update); };
+  }, []);
+
+  /* ── Motion values ── */
+  const cursorX = useMotionValue(-200);
+  const cursorY = useMotionValue(-200);
+
+  // Dot follows tightly
+  const dotX = useSpring(cursorX, { stiffness: 700, damping: 38, mass: 0.3 });
+  const dotY = useSpring(cursorY, { stiffness: 700, damping: 38, mass: 0.3 });
+
+  // Ring trails with soft lag
+  const ringX = useSpring(cursorX, { stiffness: 150, damping: 20, mass: 0.8 });
+  const ringY = useSpring(cursorY, { stiffness: 150, damping: 20, mass: 0.8 });
+
+  useEffect(() => {
+    const onMove = (e) => { cursorX.set(e.clientX); cursorY.set(e.clientY); };
+    window.addEventListener("mousemove", onMove, { passive: true });
+    return () => window.removeEventListener("mousemove", onMove);
+  }, [cursorX, cursorY]);
+
+  if (!isFinePointer) return null;
+
+  const ACCENT = "79, 70, 229"; // RGB of indigo-600
+
+  return (
+    <>
+      {/* ── Dot — crisp, accent-colored ── */}
+      <motion.div
+        aria-hidden="true"
+        style={{
+          position:    "fixed",
+          top:         0,
+          left:        0,
+          x:           dotX,
+          y:           dotY,
+          translateX:  "-50%",
+          translateY:  "-50%",
+          pointerEvents: "none",
+          zIndex:      99999,
+          borderRadius: "50%",
+          background:  isHovered
+            ? `rgba(${ACCENT}, 1)`
+            : "var(--text)",
+          width:       isHovered ? "10px" : "5px",
+          height:      isHovered ? "10px" : "5px",
+          boxShadow:   isHovered
+            ? `0 0 12px 3px rgba(${ACCENT}, 0.55)`
+            : "none",
+          transition:  "width 0.22s cubic-bezier(0.34,1.56,0.64,1), height 0.22s cubic-bezier(0.34,1.56,0.64,1), background 0.22s ease, box-shadow 0.22s ease",
+        }}
+      />
+
+      {/* ── Ring — clean circle, no blend-mode ── */}
+      <motion.div
+        aria-hidden="true"
+        style={{
+          position:    "fixed",
+          top:         0,
+          left:        0,
+          x:           ringX,
+          y:           ringY,
+          translateX:  "-50%",
+          translateY:  "-50%",
+          pointerEvents: "none",
+          zIndex:      99998,
+          borderRadius: "50%",
+          border:      isHovered
+            ? `1.5px solid rgba(${ACCENT}, 0.85)`
+            : "1.5px solid rgba(128,128,128,0.28)",
+          background:  isHovered
+            ? `rgba(${ACCENT}, 0.06)`
+            : "transparent",
+          width:        isHovered ? "48px" : "28px",
+          height:       isHovered ? "48px" : "28px",
+          boxShadow:    isHovered
+            ? `0 0 20px 4px rgba(${ACCENT}, 0.18), inset 0 0 12px rgba(${ACCENT}, 0.06)`
+            : "none",
+          backdropFilter: isHovered ? "blur(1px)" : "none",
+          transition:
+            "width 0.38s cubic-bezier(0.34,1.56,0.64,1), " +
+            "height 0.38s cubic-bezier(0.34,1.56,0.64,1), " +
+            "border-color 0.25s ease, " +
+            "background 0.25s ease, " +
+            "box-shadow 0.3s ease",
+        }}
+      />
+    </>
+  );
 }

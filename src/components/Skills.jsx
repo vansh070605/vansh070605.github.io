@@ -1,383 +1,364 @@
-import { motion } from "framer-motion";
-import { useState } from "react";
-import HyperText from "./ui/HyperText";
+import { motion, AnimatePresence, useScroll, useTransform, useSpring } from "framer-motion";
+import { useState, useRef, useEffect } from "react";
+import { MaskReveal, TextReveal } from "./ui/TextReveal";
+import Magnetic from "./ui/Magnetic";
 
-const skillsByCategory = {
-  "AI/ML": [
-    { name: "Python", level: 95 },
-    { name: "TensorFlow", level: 88 },
-    { name: "PyTorch", level: 85 },
-    { name: "Scikit-learn", level: 90 },
-    { name: "NumPy", level: 92 },
-    { name: "Pandas", level: 90 }
+const SKILL_CATEGORIES = {
+  "AI / ML": [
+    { name: "Python",      level: 95, icon: "🐍" },
+    { name: "TensorFlow",  level: 88, icon: "🔶" },
+    { name: "PyTorch",     level: 85, icon: "🔥" },
+    { name: "Scikit-learn",level: 90, icon: "📐" },
+    { name: "NumPy",       level: 92, icon: "🔢" },
+    { name: "Pandas",      level: 90, icon: "🐼" },
   ],
   "Web Dev": [
-    { name: "React", level: 92 },
-    { name: "JavaScript", level: 90 },
-    { name: "Node.js", level: 85 },
-    { name: "Flask", level: 88 },
-    { name: "HTML/CSS", level: 95 }
+    { name: "React",       level: 92, icon: "⚛️" },
+    { name: "JavaScript",  level: 90, icon: "🟨" },
+    { name: "Node.js",     level: 85, icon: "🟩" },
+    { name: "Flask",       level: 88, icon: "🌶️" },
+    { name: "HTML/CSS",    level: 95, icon: "🌐" },
   ],
-  "OpenCV": [
-    { name: "Python", level: 95 },
-    { name: "OpenCV", level: 90 },
-    { name: "NumPy", level: 92 },
-    { name: "Pandas", level: 90 }
+  "Vision": [
+    { name: "OpenCV",      level: 90, icon: "👁️" },
+    { name: "MediaPipe",   level: 85, icon: "🖐️" },
+    { name: "YOLO",        level: 82, icon: "📸" },
+    { name: "NumPy",       level: 92, icon: "🔢" },
   ],
   "Tools": [
-    { name: "Git", level: 90 },
-    { name: "Linux", level: 85 },
-    { name: "Docker", level: 82 },
-    { name: "MySQL", level: 88 }
-  ]
+    { name: "Git",         level: 90, icon: "🌿" },
+    { name: "Linux",       level: 85, icon: "🐧" },
+    { name: "Docker",      level: 82, icon: "🐳" },
+    { name: "MySQL",       level: 88, icon: "🗄️" },
+  ],
 };
 
-const categoryColors = {
-  "AI/ML": "#C792EA",
-  "Web Dev": "#FF8EDC",
-  "OpenCV": "#82AAFF",
-  "Tools": "#C3E88D"
+const ACCENT_COLORS = {
+  "AI / ML": "#4F46E5",
+  "Web Dev":  "#E11D48",
+  "Vision":   "#D97706",
+  "Tools":    "#6B8F71",
 };
+
+const TABS = Object.keys(SKILL_CATEGORIES);
 
 export default function Skills() {
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const containerRef = useRef(null);
+  const trackRef     = useRef(null);
 
-  // Get skills to display based on selected category
-  const getDisplaySkills = () => {
-    if (selectedCategory === "All") {
-      return Object.entries(skillsByCategory).flatMap(([cat, skills]) =>
-        skills.slice(0, 5).map(s => ({ ...s, category: cat }))
+  const [activeTab, setActiveTab] = useState(TABS[0]);
+  const [trackWidth, setTrackWidth] = useState(0);
+  const [viewportWidth, setViewportWidth] = useState(0);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (trackRef.current) {
+        setTrackWidth(trackRef.current.scrollWidth);
+      }
+      setViewportWidth(window.innerWidth);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const isMobile = viewportWidth > 0 && viewportWidth < 768;
+
+  // useScroll linked to container vertical scroll progress
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+  });
+
+  const maxScroll = -(trackWidth - viewportWidth + 100);
+  const x = useTransform(scrollYProgress, [0, 1], [0, maxScroll < 0 ? maxScroll : 0]);
+  const smoothX = useSpring(x, { stiffness: 60, damping: 18, mass: 0.8 });
+
+  // Update active category tab dynamically based on horizontal scroll progress
+  useEffect(() => {
+    const unsubscribe = scrollYProgress.on("change", (v) => {
+      const idx = Math.min(
+        Math.floor(v * TABS.length),
+        TABS.length - 1
       );
+      setActiveTab(TABS[idx]);
+    });
+    return () => unsubscribe();
+  }, [scrollYProgress]);
+
+  // Click a tab pill to scroll to its corresponding vertical progress offset
+  const handleTabClick = (tabIndex) => {
+    if (isMobile) {
+       // On mobile, just scroll to the category panel natively
+       const el = document.getElementById(`skill-cat-${TABS[tabIndex]}`);
+       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+       return;
     }
-    return skillsByCategory[selectedCategory].map(s => ({ ...s, category: selectedCategory }));
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const scrollTop = window.scrollY + rect.top;
+    const targetScroll = scrollTop + (tabIndex / (TABS.length - 1)) * (containerRef.current.offsetHeight - window.innerHeight);
+    window.scrollTo({ top: targetScroll, behavior: "smooth" });
   };
 
-  const displaySkills = getDisplaySkills();
-  const numSkills = displaySkills.length;
-
-  // Calculate polygon points for radar chart
-  const calculatePoints = (levels) => {
-    const centerX = 200;
-    const centerY = 200;
-    const maxRadius = 150;
-
-    return levels.map((level, i) => {
-      const angle = (Math.PI * 2 * i) / numSkills - Math.PI / 2;
-      const radius = (level / 100) * maxRadius;
-      const x = centerX + radius * Math.cos(angle);
-      const y = centerY + radius * Math.sin(angle);
-      return `${x},${y}`;
-    }).join(' ');
-  };
-
-  // Calculate label positions
-  const getLabelPosition = (index) => {
-    const centerX = 200;
-    const centerY = 200;
-    const labelRadius = 170;
-    const angle = (Math.PI * 2 * index) / numSkills - Math.PI / 2;
-    const x = centerX + labelRadius * Math.cos(angle);
-    const y = centerY + labelRadius * Math.sin(angle);
-    return { x, y, angle };
-  };
+  // Skill marquee scroll driven translation
+  const tickerX = useTransform(scrollYProgress, [0, 1], ["0%", "-45%"]);
+  const smoothTickerX = useSpring(tickerX, { stiffness: 70, damping: 22 });
 
   return (
-    <section className="skills" id="skills" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '80px 20px' }}>
-      {/* Section header */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-        style={{ textAlign: 'center', marginBottom: '60px' }}
-      >
-        <p className="comment" style={{ fontSize: '0.9rem', marginBottom: '10px' }}>
-          // Technical skills and proficiency
-        </p>
-        <h2 style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: 'clamp(1.8rem, 3vw, 2.5rem)',
-          color: '#EEFFFF'
-        }}>
-          <span className="keyword">const</span> <span className="function"><HyperText text="skillRadar" /></span> = <span className="operator">{'{'}</span>
-        </h2>
-      </motion.div>
+    <div id="skills" ref={containerRef} className={`relative bg-cream dark:bg-zinc-950 ${isMobile ? "py-16" : "h-[300vh]"}`}>
+      {/* Sticky layout container */}
+      <div className={`${isMobile ? "flex flex-col gap-12" : "sticky top-0 h-screen overflow-hidden flex flex-col justify-between py-16"}`}>
 
-      {/* Category Filter Buttons */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
-        viewport={{ once: true }}
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          gap: '15px',
-          marginBottom: '50px',
-          flexWrap: 'wrap'
-        }}
-        className="skills-filters"
-      >
-        {["All", "AI/ML", "Web Dev", "Tools", "OpenCV"].map((category) => (
-          <button
-            key={category}
-            onClick={() => setSelectedCategory(category)}
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '0.9rem',
-              padding: '10px 24px',
-              background: selectedCategory === category
-                ? (category === "All" ? 'rgba(130, 170, 255, 0.2)' : `${categoryColors[category]}20`)
-                : 'transparent',
-              border: selectedCategory === category
-                ? (category === "All" ? '1px solid #82AAFF' : `1px solid ${categoryColors[category]}`)
-                : '1px solid rgba(130, 170, 255, 0.3)',
-              borderRadius: '8px',
-              color: selectedCategory === category
-                ? (category === "All" ? '#82AAFF' : categoryColors[category])
-                : '#EEFFFF',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease',
-              fontWeight: selectedCategory === category ? 600 : 400
-            }}
-            onMouseEnter={(e) => {
-              if (selectedCategory !== category) {
-                e.currentTarget.style.background = 'rgba(130, 170, 255, 0.05)';
-                e.currentTarget.style.borderColor = '#82AAFF';
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (selectedCategory !== category) {
-                e.currentTarget.style.background = 'transparent';
-                e.currentTarget.style.borderColor = 'rgba(130, 170, 255, 0.3)';
-              }
-            }}
-          >
-            {category === "All" ? "📊 All Skills" : `${category}`}
-          </button>
-        ))}
-      </motion.div>
-
-      {/* Radar Chart Container */}
-      <motion.div
-        key={selectedCategory}
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
-        style={{
-          maxWidth: '100%',
-          margin: '0 auto',
-          width: '100%',
-          padding: '0 20px'
-        }}
-        className="skills-radar"
-      >
-        {/* SVG Radar Chart */}
-        <svg viewBox="0 0 400 400" style={{ width: '100%', maxWidth: '600px', margin: '0 auto', display: 'block' }}>
-          {/* Grid circles */}
-          {[20, 40, 60, 80, 100].map((percent) => (
-            <circle
-              key={percent}
-              cx="200"
-              cy="200"
-              r={(percent / 100) * 150}
-              fill="none"
-              stroke="rgba(130, 170, 255, 0.1)"
-              strokeWidth="1"
-            />
-          ))}
-
-          {/* Grid lines from center */}
-          {displaySkills.map((_, i) => {
-            const angle = (Math.PI * 2 * i) / numSkills - Math.PI / 2;
-            const x = 200 + 150 * Math.cos(angle);
-            const y = 200 + 150 * Math.sin(angle);
-            return (
-              <line
-                key={i}
-                x1="200"
-                y1="200"
-                x2={x}
-                y2={y}
-                stroke="rgba(130, 170, 255, 0.15)"
-                strokeWidth="1"
-              />
-            );
-          })}
-
-          {/* Skill polygon - animated */}
-          <motion.polygon
-            points={calculatePoints(displaySkills.map(s => s.level))}
-            fill={selectedCategory === "All" ? "rgba(130, 170, 255, 0.15)" : `${categoryColors[selectedCategory]}20`}
-            stroke={selectedCategory === "All" ? "#82AAFF" : categoryColors[selectedCategory]}
-            strokeWidth="2"
-            initial={{ pathLength: 0, opacity: 0 }}
-            animate={{ pathLength: 1, opacity: 1 }}
-            transition={{ duration: 1.5, ease: "easeOut" }}
-          />
-
-          {/* Skill points */}
-          {displaySkills.map((skill, i) => {
-            const angle = (Math.PI * 2 * i) / numSkills - Math.PI / 2;
-            const radius = (skill.level / 100) * 150;
-            const x = 200 + radius * Math.cos(angle);
-            const y = 200 + radius * Math.sin(angle);
-            const color = selectedCategory === "All" ? categoryColors[skill.category] : categoryColors[selectedCategory];
-
-            return (
-              <motion.g key={i}>
-                {/* Glow effect */}
-                <circle
-                  cx={x}
-                  cy={y}
-                  r="8"
-                  fill={`${color}30`}
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ duration: 0.5, delay: i * 0.1 }}
-                />
-                {/* Point */}
-                <motion.circle
-                  cx={x}
-                  cy={y}
-                  r="5"
-                  fill={color}
-                  stroke="#000"
-                  strokeWidth="2"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ duration: 0.5, delay: i * 0.1 }}
-                  whileHover={{ scale: 1.5 }}
-                  style={{ cursor: 'pointer' }}
-                />
-              </motion.g>
-            );
-          })}
-
-          {/* Skill labels */}
-          {displaySkills.map((skill, i) => {
-            const pos = getLabelPosition(i);
-            const color = selectedCategory === "All" ? categoryColors[skill.category] : categoryColors[selectedCategory];
-
-            return (
-              <motion.text
-                key={i}
-                x={pos.x}
-                y={pos.y}
-                textAnchor="middle"
-                fill={color}
-                fontSize="12"
-                fontFamily="var(--font-mono)"
-                fontWeight="600"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5, delay: 0.5 + i * 0.05 }}
+        {/* Header and navigation tabs */}
+        <div className="section-container w-full z-20">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-8">
+            <div>
+              <motion.div
+                initial={{ clipPath: "inset(0 100% 0 0)", opacity: 0 }}
+                whileInView={{ clipPath: "inset(0 0% 0 0)", opacity: 1 }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{ duration: 0.7, ease: [0.33,1,0.68,1] }}
               >
-                {skill.name}
-              </motion.text>
-            );
-          })}
+                <p className="label-text mb-2 text-indigo">Tech Stacks</p>
+              </motion.div>
+              <TextReveal
+                as="h2"
+                className="display-text text-zinc-900 dark:text-white"
+                style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)" }}
+                delay={0.06}
+                stagger={0.07}
+                duration={1.0}
+              >
+                What I work with.
+              </TextReveal>
+            </div>
 
-          {/* Center percentage labels */}
-          <text x="200" y="55" textAnchor="middle" fill="#707A8A" fontSize="9" fontFamily="var(--font-mono)">100%</text>
-          <text x="200" y="85" textAnchor="middle" fill="#707A8A" fontSize="9" fontFamily="var(--font-mono)">80%</text>
-          <text x="200" y="115" textAnchor="middle" fill="#707A8A" fontSize="9" fontFamily="var(--font-mono)">60%</text>
-          <text x="200" y="145" textAnchor="middle" fill="#707A8A" fontSize="9" fontFamily="var(--font-mono)">40%</text>
-          <text x="200" y="175" textAnchor="middle" fill="#707A8A" fontSize="9" fontFamily="var(--font-mono)">20%</text>
-        </svg>
+            {/* Scroll navigation tabs */}
+            <div className="flex flex-wrap gap-2">
+              {TABS.map((tab, idx) => {
+                const isActive = activeTab === tab;
+                const accentColor = ACCENT_COLORS[tab];
+                return (
+                  <button
+                    key={tab}
+                    onClick={() => handleTabClick(idx)}
+                    className="relative px-5 py-2 rounded-full text-xs font-bold tracking-wider uppercase transition-colors duration-300 outline-none cursor-none"
+                    style={{
+                      color: isActive ? "#fff" : "var(--text-muted)",
+                      border: `1.5px solid ${isActive ? accentColor : "var(--border)"}`,
+                    }}
+                  >
+                    {isActive && (
+                      <motion.div
+                        layoutId="active-tab-indicator-scroll"
+                        className="absolute inset-0 rounded-full -z-10"
+                        style={{
+                          background: accentColor,
+                          boxShadow: `0 4px 16px ${accentColor}40`,
+                        }}
+                        transition={{ type: "spring", stiffness: 350, damping: 28 }}
+                      />
+                    )}
+                    {tab}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
 
-        {/* Legend */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.8 }}
-          viewport={{ once: true }}
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            gap: '30px',
-            marginTop: '40px',
-            flexWrap: 'wrap'
-          }}
+        {/* Giant morphing background category name display */}
+        {!isMobile && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden z-0 opacity-10 dark:opacity-[0.03]">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, scale: 0.85, filter: "blur(20px)" }}
+              animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+              exit={{ opacity: 0, scale: 1.15, filter: "blur(20px)" }}
+              transition={{ duration: 0.8, ease: [0.33, 1, 0.68, 1] }}
+              className="font-display italic text-[24vw] leading-none text-zinc-900 dark:text-white"
+            >
+              {activeTab}
+            </motion.div>
+          </div>
+        )}
+
+        {/* Horizontal scrollable track for the categories */}
+        <div className="relative flex-grow flex items-center z-10 w-full">
+          <motion.div
+            ref={trackRef}
+            style={isMobile ? {} : { x: smoothX }}
+            className={`flex w-full ${isMobile ? "flex-col gap-20 px-6" : "items-center gap-24 px-[20vw] h-[340px]"}`}
+          >
+            {TABS.map((tab) => (
+              <CategoryPanel
+                key={tab}
+                categoryName={tab}
+                skills={SKILL_CATEGORIES[tab]}
+                accent={ACCENT_COLORS[tab]}
+                isMobile={isMobile}
+              />
+            ))}
+          </motion.div>
+        </div>
+
+        {/* Infinite scrolling marquee ticker of all skills */}
+        <div
+          className="overflow-hidden py-5 w-[100vw] relative left-1/2 -translate-x-1/2"
+          style={{ borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)" }}
         >
-          {Object.entries(categoryColors).map(([category, color]) => (
-            <div
-              key={category}
+          <div className="flex gap-8 whitespace-nowrap animate-ticker w-max">
+            {[...Object.values(SKILL_CATEGORIES).flat(), ...Object.values(SKILL_CATEGORIES).flat()].map((s, i) => (
+              <span
+                key={i}
+                className="label-text flex items-center gap-4"
+                style={{ fontSize: "0.72rem", opacity: 0.5 }}
+              >
+                <span className="opacity-40">✦</span>
+                <span className="flex items-center gap-2">
+                  <span>{s.icon}</span> {s.name}
+                </span>
+              </span>
+            ))}
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
+/* ── Skill Category Panel component ── */
+function CategoryPanel({ categoryName, skills, accent, isMobile }) {
+  return (
+    <motion.div
+      id={`skill-cat-${categoryName}`}
+      initial={isMobile ? { opacity: 0, y: 50 } : {}}
+      whileInView={isMobile ? { opacity: 1, y: 0 } : {}}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      className={`flex-shrink-0 flex flex-col gap-6 ${isMobile ? "w-full" : "w-[80vw] max-w-[1100px]"}`}
+    >
+      <div className="flex items-center gap-3">
+        <div className="w-1.5 h-6 rounded-full" style={{ background: accent }} />
+        <h3 className="font-display italic text-2xl text-zinc-900 dark:text-white">
+          {categoryName} Skills
+        </h3>
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+        {skills.map((skill, idx) => (
+          <SkillNodeWidget
+            key={skill.name}
+            skill={skill}
+            accent={accent}
+            index={idx}
+          />
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
+/* ── Interactive Skill Node Widget component ── */
+function SkillNodeWidget({ skill, accent, index }) {
+  const [hovered, setHovered] = useState(false);
+
+  const size = 96;
+  const strokeWidth = 4;
+  const radius = (size - strokeWidth) / 2;
+  const circumference = radius * 2 * Math.PI;
+
+  return (
+    <Magnetic strength={0.2} radius={60}>
+      <motion.div
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        initial={{ opacity: 0, rotateX: -55, scale: 0.85, clipPath: "inset(30% 0 0 0 round 2rem)" }}
+        whileInView={{ opacity: 1, rotateX: 0, scale: 1, clipPath: "inset(0% 0 0 0 round 2rem)" }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: index * 0.07 }}
+        whileHover={{ scale: 1.05, y: -4, transition: { duration: 0.25, ease: [0.33,1,0.68,1] } }}
+        className="relative flex flex-col items-center justify-center p-5 rounded-[2rem] border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm hover:shadow-xl transition-shadow duration-300 w-full aspect-square cursor-none select-none overflow-hidden"
+        style={{ transformOrigin: "bottom center", transformPerspective: "600px" }}
+      >
+        {/* spotlight glow */}
+        <div
+          className="absolute inset-0 pointer-events-none transition-opacity duration-300"
+          style={{
+            background: `radial-gradient(70px circle at center, ${accent}15, transparent 80%)`,
+            opacity: hovered ? 1 : 0.3,
+          }}
+        />
+
+        {/* Circle SVG */}
+        <div className="relative w-[96px] h-[96px] flex items-center justify-center">
+          <svg className="absolute inset-0 w-full h-full -rotate-90">
+            <circle
+              cx={size / 2}
+              cy={size / 2}
+              r={radius}
+              fill="transparent"
+              stroke="var(--bg-surface)"
+              strokeWidth={strokeWidth}
+            />
+            <motion.circle
+              cx={size / 2}
+              cy={size / 2}
+              r={radius}
+              fill="transparent"
+              stroke={accent}
+              strokeWidth={strokeWidth}
+              strokeDasharray={circumference}
+              initial={{ strokeDashoffset: circumference }}
+              whileInView={{
+                strokeDashoffset: circumference - (skill.level / 100) * circumference,
+              }}
+              viewport={{ once: true }}
+              transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1], delay: 0.15 + index * 0.06 }}
+              strokeLinecap="round"
+            />
+          </svg>
+
+          <motion.span
+            animate={{
+              rotate: hovered ? 360 : 0,
+              scale: hovered ? 1.2 : 1,
+            }}
+            transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+            className="text-3xl relative z-10"
+          >
+            {skill.icon}
+          </motion.span>
+        </div>
+
+        <h4 className="font-semibold text-[11px] tracking-wider text-zinc-900 dark:text-white mt-3 text-center">
+          {skill.name}
+        </h4>
+
+        {/* Hover percentage badge tooltip */}
+        <AnimatePresence>
+          {hovered && (
+            <motion.div
+              initial={{ opacity: 0, y: 10, scale: 0.8 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 8, scale: 0.8 }}
+              transition={{ duration: 0.22, ease: "easeOut" }}
+              className="absolute bottom-3 tag-pill"
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                fontFamily: 'var(--font-mono)',
-                fontSize: '0.85rem',
-                color: '#EEFFFF',
-                opacity: selectedCategory === "All" || selectedCategory === category ? 1 : 0.4,
-                transition: 'opacity 0.3s ease'
+                borderColor: `${accent}40`,
+                color: accent,
+                background: "var(--bg-surface)",
+                fontSize: "0.65rem",
+                padding: "0.2rem 0.6rem",
               }}
             >
-              <div style={{
-                width: '12px',
-                height: '12px',
-                borderRadius: '50%',
-                background: color,
-                boxShadow: `0 0 8px ${color}60`
-              }} />
-              {category}
-            </div>
-          ))}
-        </motion.div>
+              {skill.level}%
+            </motion.div>
+          )}
+        </AnimatePresence>
+
       </motion.div>
-
-      {/* Closing brace */}
-      <motion.p
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        transition={{ duration: 0.8, delay: 1 }}
-        viewport={{ once: true }}
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: 'clamp(1.5rem, 3vw, 2.5rem)',
-          color: '#82AAFF',
-          marginTop: '60px',
-          textAlign: 'center'
-        }}
-      >
-        <span className="operator">{'}'}</span>
-      </motion.p>
-
-      {/* Responsive styles */}
-      <style>{`
-        @media (max-width: 968px) {
-          .skills-filters button {
-            font-size: 0.8rem !important;
-            padding: 8px 16px !important;
-          }
-          
-          .skills-radar {
-            padding: 0 10px !important;
-          }
-          
-          .skills-radar svg {
-            max-width: 100% !important;
-          }
-        }
-        
-        @media (max-width: 480px) {
-          .skills-filters {
-            gap: 10px !important;
-          }
-          
-          .skills-filters button {
-            font-size: 0.75rem !important;
-            padding: 6px 12px !important;
-            flex: 1 1 calc(50% - 5px);
-            min-width: 120px;
-          }
-          
-          .skills-radar {
-            padding: 0 !important;
-          }
-        }
-      `}</style>
-    </section>
+    </Magnetic>
   );
 }

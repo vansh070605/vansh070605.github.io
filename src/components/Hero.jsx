@@ -1,227 +1,254 @@
-import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
-import HyperText from "./ui/HyperText";
-import Magnetic from "./ui/Magnetic";
+import { useRef }          from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { motion }           from "framer-motion";
+import { MaskReveal, FadeReveal } from "./ui/TextReveal";
+import Magnetic              from "./ui/Magnetic";
 
-export default function Hero() {
-  const [mounted, setMounted] = useState(false);
+/* ── Three.js rotating wireframe orb ───────────────────────────── */
+function FloatingOrb() {
+  const meshRef = useRef();
+  const t       = useRef(0);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  useFrame((_, delta) => {
+    t.current += delta * 0.28;
+    if (!meshRef.current) return;
+    meshRef.current.rotation.x += delta * 0.07;
+    meshRef.current.rotation.y += delta * 0.11;
+    meshRef.current.position.y  = Math.sin(t.current) * 0.35;
+  });
 
   return (
-    <section className="hero">
-      <div className="hero-content">
-        {/* Code-style introduction */}
-        <div className="hero-code">
-          <span className="line">
-            <span className="comment">// Portfolio initialized...</span>
-          </span>
-          <span className="line">
-            <span className="keyword">const</span>{" "}
-            <span className="variable">developer</span>{" "}
-            <span className="operator">=</span> {"{"}
-          </span>
-          <span className="line">
-            &nbsp;&nbsp;<span className="string">name</span>:{" "}
-            <span className="string">"Vansh Agrawal"</span>,
-          </span>
-          <span className="line">
-            &nbsp;&nbsp;<span className="string">role</span>:{" "}
-            <span className="string">"AIML Engineer"</span>,
-          </span>
-          <span className="line">
-            &nbsp;&nbsp;<span className="string">semester</span>:{" "}
-            <span className="number">6</span>,
-          </span>
-          <span className="line">{"}"}</span>
-        </div>
+    <mesh ref={meshRef}>
+      <icosahedronGeometry args={[1.6, 3]} />
+      <meshStandardMaterial
+        color="#818CF8"
+        wireframe
+        opacity={0.18}
+        transparent
+      />
+    </mesh>
+  );
+}
 
-        {/* Main title */}
-        <motion.h1
-          className="hero-title"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.7 }}
+/* ── Hero ───────────────────────────────────────────────────────── */
+export default function Hero() {
+  return (
+    <section
+      id="hero"
+      className="relative min-h-screen flex items-center overflow-hidden"
+      style={{ paddingTop: "5.5rem" }}
+    >
+      {/* Background dots */}
+      <div
+        className="absolute inset-0 bg-dot-pattern pointer-events-none"
+        style={{ opacity: 0.32 }}
+      />
+
+      {/* Three.js orb — right side */}
+      <div
+        className="absolute right-0 top-0 bottom-0 pointer-events-none w-full md:w-[52%] opacity-[0.25] md:opacity-55 z-0"
+      >
+        <Canvas
+          camera={{ position: [0, 0, 4], fov: 45 }}
+          gl={{ antialias: true, alpha: true }}
+          style={{ width: "100%", height: "100%" }}
         >
-          Hello, I'm <span style={{ color: '#C3E88D' }}><HyperText text="Vansh" /></span>
-        </motion.h1>
+          <ambientLight intensity={0.6} />
+          <directionalLight position={[2, 4, 2]} intensity={0.8} />
+          <pointLight position={[-2, -2, 2]} intensity={0.4} color="#E11D48" />
+          <FloatingOrb />
+        </Canvas>
+      </div>
 
-        {/* Subtitle */}
-        <motion.p
-          className="hero-subtitle"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.9 }}
-        >
-          <span className="operator">&gt;</span> Building intelligent systems with{" "}
-          <span className="keyword">AI/ML</span> & elegant code
-        </motion.p>
+      {/* ── Content ─────────────────────────────────────────────── */}
+      <div className="section-container relative z-10 w-full">
+        <div style={{ maxWidth: "820px" }}>
 
-        {/* Description */}
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 1.1 }}
-          style={{ color: '#707A8A', marginBottom: '40px', fontFamily: 'var(--font-sans)' }}
-        >
-          6th semester AIML Engineering student passionate about deep learning,
-          computer vision, and full-stack development. Turning complex problems
-          into clean, scalable solutions.
-        </motion.p>
+          {/* Label — mask reveal */}
+          <MaskReveal delay={0.05} duration={0.7} animateOnMount={true}>
+            <p className="label-text mb-8">
+              AIML Engineer &amp; Full-Stack Developer
+            </p>
+          </MaskReveal>
 
-        {/* CTA Buttons */}
-        <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', justifyContent: 'center' }}>
-          <Magnetic>
-            <motion.a
-              href="#projects"
-              className="hero-cta"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 1.3 }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <span className="function">viewProjects</span>()
-            </motion.a>
-          </Magnetic>
-
-          <Magnetic>
-            <motion.a
-              href="/Vansh_Agrawal_Resume.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hero-cta"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 1.4 }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+          {/* "Hello, I'm" — direct reveal */}
+          <div className="overflow-hidden block">
+            <motion.span
               style={{
-                borderColor: '#C3E88D',
-                color: '#C3E88D'
+                display:       "block",
+                fontFamily:    "var(--font-sans)",
+                fontSize:      "clamp(2.2rem, 7vw, 5.5rem)",
+                fontWeight:    800,
+                letterSpacing: "-0.03em",
+                color:         "var(--text)",
+                lineHeight:    1.05,
+              }}
+              initial={{ y: "110%" }}
+              animate={{ y: "0%" }}
+              transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1], delay: 0.18 }}
+            >
+              Hello, I'm
+            </motion.span>
+          </div>
+
+          {/* "Vansh." — direct reveal */}
+          <div className="overflow-hidden block" style={{ marginBottom: "2rem" }}>
+            <motion.span
+              className="display-text"
+              style={{
+                display:       "block",
+                fontSize:      "clamp(3rem, 12vw, 10rem)",
+                color:         "var(--accent)",
+                lineHeight:    0.95,
+                letterSpacing: "-0.04em",
+              }}
+              initial={{ y: "110%" }}
+              animate={{ y: "0%" }}
+              transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1], delay: 0.30 }}
+            >
+              Vansh.
+            </motion.span>
+          </div>
+
+          {/* Rotating stamp badge */}
+          <div className="w-32 h-32 lg:w-40 lg:h-40 my-6 lg:my-0 lg:absolute lg:right-[8%] lg:top-[22%] flex items-center justify-center z-20 pointer-events-none select-none">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, rotate: -45 }}
+              animate={{ opacity: 0.72, scale: 1, rotate: 0 }}
+              transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1], delay: 0.8 }}
+              className="relative w-full h-full flex items-center justify-center"
+            >
+              {/* Spinning Text Ring */}
+              <svg className="w-full h-full animate-[spin_20s_linear_infinite]" viewBox="0 0 100 100">
+                <path
+                  id="circlePath"
+                  d="M 50, 50 m -36, 0 a 36,36 0 1,1 72,0 a 36,36 0 1,1 -72,0"
+                  fill="transparent"
+                />
+                <text className="fill-zinc-500 dark:fill-zinc-400 font-mono text-[6px] uppercase tracking-[0.2em] font-semibold">
+                  <textPath href="#circlePath" startOffset="0%">
+                    ✦ AIML RESEARCH ✦ SYSTEM ARCHITECT ✦ FULL-STACK DEV ✦
+                  </textPath>
+                </text>
+              </svg>
+              {/* Central Core Icon */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200/60 dark:border-zinc-800/60 flex items-center justify-center shadow-lg backdrop-blur-sm">
+                  <span className="relative flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-indigo-500"></span>
+                  </span>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Status Badge */}
+          <FadeReveal delay={0.45} animateOnMount={true}>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/50 dark:border-zinc-800/50 text-[10px] tracking-wider uppercase text-zinc-600 dark:text-zinc-400 font-mono mb-6">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+              </span>
+              Available for Internships &amp; Projects
+            </div>
+          </FadeReveal>
+
+          {/* Description */}
+          <FadeReveal delay={0.55} style={{ marginBottom: "2.5rem" }} animateOnMount={true}>
+            <p
+              style={{
+                fontSize:  "clamp(1rem, 2vw, 1.2rem)",
+                color:     "var(--text-muted)",
+                lineHeight: 1.8,
+                maxWidth:  "520px",
               }}
             >
-              <span className="function">downloadResume</span>()
-            </motion.a>
-          </Magnetic>
+              6th-semester AIML Engineering student passionate about deep
+              learning, computer vision, and full-stack development. Turning
+              complex problems into clean, scalable solutions.
+            </p>
+          </FadeReveal>
+
+          {/* CTA Buttons — wrapped in Magnetic */}
+          <FadeReveal delay={0.65} animateOnMount={true}>
+            <div className="flex flex-wrap gap-3">
+              <Magnetic strength={0.3} radius={80}>
+                <a
+                  href="#projects"
+                  className="btn-primary"
+                  id="hero-view-work"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    document.querySelector("#projects")?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                >
+                  View my work
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </a>
+              </Magnetic>
+
+              <Magnetic strength={0.3} radius={80}>
+                <a
+                  href="/Vansh_Agrawal_Resume.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-outline"
+                  id="hero-resume"
+                >
+                  Download CV ↗
+                </a>
+              </Magnetic>
+            </div>
+          </FadeReveal>
+
+          {/* Social quick links */}
+          <FadeReveal delay={0.78} animateOnMount={true}>
+            <div className="flex flex-wrap items-center gap-y-3 gap-x-5 mt-10">
+              <span className="label-text" style={{ fontSize: "0.68rem" }}>FIND ME ON</span>
+              <div className="flex gap-4">
+                {[
+                  { label: "GitHub",   url: "https://github.com/vansh070605"        },
+                  { label: "LinkedIn", url: "https://linkedin.com/in/thevanshagrawal" },
+                  { label: "X",        url: "https://x.com/vansh070605"             },
+                ].map((s) => (
+                  <Magnetic key={s.label} strength={0.25} radius={60}>
+                    <a
+                      href={s.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="label-text transition-all duration-200 hover:opacity-100"
+                      style={{ fontSize: "0.72rem", opacity: 0.55 }}
+                      id={`hero-social-${s.label.toLowerCase()}`}
+                    >
+                      {s.label}
+                    </a>
+                  </Magnetic>
+                ))}
+              </div>
+            </div>
+          </FadeReveal>
         </div>
       </div>
 
       {/* Scroll indicator */}
       <motion.div
+        className="hidden sm:flex absolute bottom-16 left-1/2 -translate-x-1/2 flex-col items-center gap-2 z-20"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 2 }}
-        style={{
-          position: 'absolute',
-          bottom: '60px',
-          fontFamily: 'var(--font-mono)',
-          fontSize: '0.85rem',
-          color: '#546E7A',
-          animation: 'pulse 2s infinite'
-        }}
-        className="scroll-indicator"
+        transition={{ delay: 2.0, duration: 0.8 }}
       >
-        <span className="operator">▼</span> scroll to explore
+        <span className="label-text" style={{ fontSize: "0.65rem" }}>SCROLL</span>
+        <div
+          className="w-[1px] h-12"
+          style={{
+            background: "linear-gradient(to bottom, var(--text-muted), transparent)",
+            animation:  "float 2s ease-in-out infinite",
+          }}
+        />
       </motion.div>
-
-      {/* Responsive styles */}
-      <style>{`
-        @media (max-width: 968px) {
-          .hero {
-            padding: 100px 6vw !important;
-            text-align: left !important;
-            align-items: flex-start !important;
-          }
-          
-          .hero-content {
-            width: 100%;
-            max-width: 100%;
-          }
-          
-          .hero-code {
-            font-size: 0.85rem !important;
-            margin-bottom: 35px !important;
-          }
-          
-          .hero-title {
-            font-size: clamp(2.2rem, 8vw, 3rem) !important;
-            margin-bottom: 25px !important;
-          }
-          
-          .hero-subtitle {
-            font-size: clamp(1.2rem, 4vw, 1.5rem) !important;
-            margin-bottom: 25px !important;
-          }
-          
-          .hero-content p {
-            font-size: 1rem !important;
-            line-height: 1.7 !important;
-          }
-          
-          .hero-content > div > a {
-            width: 100% !important;
-            justify-content: center !important;
-            padding: 16px 24px !important;
-            font-size: 1rem !important;
-          }
-          
-          .hero-content > div {
-            flex-direction: column !important;
-            width: 100% !important;
-            gap: 15px !important;
-          }
-          
-          .scroll-indicator {
-            bottom: 30px !important;
-            font-size: 0.8rem !important;
-          }
-        }
-        
-        @media (max-width: 480px) {
-          .hero {
-            padding: 80px 5vw !important;
-            min-height: 90vh !important;
-          }
-          
-          .hero-code {
-            font-size: 0.8rem !important;
-            margin-bottom: 30px !important;
-          }
-          
-          .hero-code .line {
-            line-height: 1.7 !important;
-          }
-          
-          .hero-title {
-            font-size: 2rem !important;
-            margin-bottom: 20px !important;
-          }
-          
-          .hero-subtitle {
-            font-size: 1.15rem !important;
-            margin-bottom: 20px !important;
-          }
-          
-          .hero-content p {
-            font-size: 0.95rem !important;
-            line-height: 1.7 !important;
-            margin-bottom: 35px !important;
-          }
-          
-          .hero-content > div > a {
-            padding: 15px 24px !important;
-            font-size: 0.95rem !important;
-          }
-          
-          .scroll-indicator {
-            bottom: 20px !important;
-            font-size: 0.75rem !important;
-          }
-        }
-      `}</style>
     </section>
   );
 }

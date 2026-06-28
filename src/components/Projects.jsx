@@ -1,509 +1,383 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
-import HyperText from "./ui/HyperText";
+import { useRef, useState, useEffect } from "react";
+import { motion, useScroll, useTransform, useSpring, useMotionValue } from "framer-motion";
+import { MaskReveal, TextReveal } from "./ui/TextReveal";
+import Magnetic from "./ui/Magnetic";
 
 const projects = [
   {
     id: 1,
+    num: "01",
     name: "LitterVision",
-    file: "litter_vision.py",
-    category: "AI-ML",
-    folder: "ai-ml",
+    category: "AI/ML",
     description: "Litter detection and classification system using computer vision and deep learning to identify different types of waste from real-world images.",
     tech: ["Python", "TensorFlow", "Flask", "OpenCV"],
-    features: ["Real-time waste detection", "Multi-class classification", "CNN architecture", "Web interface"],
     github: "https://github.com/vansh070605/LitterVision.git",
     live: "https://litter-vision.onrender.com/",
-    color: "#ffcb6b", // Yellow/Gold
-    icon: "🐍"
+    accent: "#D97706",
+    emoji: "♻️",
   },
   {
     id: 2,
+    num: "02",
     name: "MultiGesture",
-    file: "gesture_detector.py",
-    category: "AI-ML",
-    folder: "ai-ml",
+    category: "AI/ML",
     description: "Real-time hand gesture recognition system utilizing MediaPipe, OpenCV, and a TensorFlow/Keras deep learning model.",
     tech: ["Python", "OpenCV", "MediaPipe", "TensorFlow"],
-    features: ["Hand tracking", "Gesture classification", "Low-latency", "Custom training"],
     github: "https://github.com/vansh070605/MULTI-GESTURE-DETECTOR.git",
-    live: "https://www.linkedin.com/posts/thevanshagrawal_opencv-tensorflow-gesturerecognition-activity-7316212483638104064-kcqE?utm_source=share&utm_medium=member_desktop&rcm=ACoAAElgtr8B7dVS55CHuurhiU8Y2ZcdqDhYU-k",
-    color: "#c792ea", // Purple
-    icon: "🐍"
+    live: "https://www.linkedin.com/in/thevanshagrawal",
+    accent: "#4F46E5",
+    emoji: "🤚",
   },
   {
     id: 3,
+    num: "03",
     name: "AERIS",
-    file: "aeris.py",
-    category: "AI-ML",
-    folder: "ai-ml",
-    description: "AI-driven emergency management platform that replaces reactive disaster response with proactive, ML-powered intelligence, built specifically for Bihar's annual flood crisis.",
+    category: "AI/ML",
+    description: "AI-driven emergency management platform replacing reactive disaster response with proactive ML-powered intelligence, built for Bihar's annual flood crisis.",
     tech: ["Python", "Flask", "Scikit-learn", "MySQL"],
-    features: ["Disaster prediction", "Risk assessment", "ML-powered", "Historical analysis"],
     github: "https://github.com/vansh070605/AERIS.git",
     live: "#",
-    color: "#f07178", // Red
-    icon: "🐍"
+    accent: "#E11D48",
+    emoji: "🌊",
   },
   {
     id: 4,
+    num: "04",
     name: "Voxera",
-    file: "voxera_app.js",
-    category: "Web-Apps",
-    folder: "web-apps",
+    category: "Web App",
     description: "Real-time WebRTC application for peer-to-peer voice, video, and screen sharing with Socket.io integration.",
     tech: ["Node.js", "WebRTC", "Socket.io", "React"],
-    features: ["P2P video calls", "Screen sharing", "Real-time chat", "No servers"],
     github: "https://github.com/vansh070605/Voxera.git",
     live: "https://voxera-rtc.netlify.app/",
-    color: "#82aaff", // Blue
-    icon: "📜"
+    accent: "#6B8F71",
+    emoji: "📹",
   },
   {
     id: 5,
+    num: "05",
     name: "CareerExplorer",
-    file: "career_path.tsx",
     category: "Full-Stack",
-    folder: "full-stack",
-    description: "Explainable career recommendation engine mapping student profiles to ranked career suggestions.",
+    description: "Explainable career recommendation engine mapping student profiles to ranked career suggestions using machine learning.",
     tech: ["React", "Python", "Flask", "ML"],
-    features: ["Profile analysis", "Career matching", "Explainable AI", "Guidance"],
     github: "https://github.com/vansh070605/Career-Path-Explorer.git",
     live: "#",
-    color: "#c3e88d", // Green
-    icon: "⚛️"
+    accent: "#818CF8",
+    emoji: "🧭",
   },
   {
     id: 6,
+    num: "06",
     name: "EmployeeTrack",
-    file: "employee_track.ts",
     category: "Full-Stack",
-    folder: "full-stack",
-    description: "Employee work session tracking system with secure authentication and productivity analytics.",
+    description: "Employee work session tracking system with secure authentication and productivity analytics dashboard.",
     tech: ["Node.js", "MongoDB", "Express", "JWT"],
-    features: ["Session mgmt", "Productivity reports", "Admin panel", "Security"],
     github: "https://github.com/vansh070605/EMPLOYEE-DASHBOARD.git",
     live: "https://kanban-employee-dashboard.vercel.app/",
-    color: "#89ddff", // Cyan
-    icon: "🔷"
-  }
+    accent: "#0EA5E9",
+    emoji: "📊",
+  },
 ];
 
-const folders = ["ai-ml", "web-apps", "full-stack"];
-
-export default function Projects() {
-  const [activeProject, setActiveProject] = useState(projects[0]);
-  const [expandedFolders, setExpandedFolders] = useState(["ai-ml", "web-apps", "full-stack"]);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  const toggleFolder = (folder) => {
-    setExpandedFolders(prev =>
-      prev.includes(folder) ? prev.filter(f => f !== folder) : [...prev, folder]
-    );
-  };
-
+function GitHubIcon() {
   return (
-    <section className="projects-ide" id="projects" style={{
-      minHeight: '100vh',
-      padding: '100px 5vw',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center'
-    }}>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          height: '80vh',
-          maxHeight: '800px',
-          background: 'rgba(15, 17, 26, 0.95)', // Darker IDE bg with slight transparency
-          borderRadius: '12px',
-          overflow: 'hidden',
-          border: '1px solid rgba(130, 170, 255, 0.2)',
-          boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
-          position: 'relative' // For mobile menu absolute positioning
-        }}
-      >
-        {/* IDE Top Bar */}
-        <div style={{
-          height: '40px',
-          background: 'rgba(26, 28, 37, 0.95)',
-          borderBottom: '1px solid #000',
-          display: 'flex',
-          alignItems: 'center',
-          padding: '0 15px',
-          gap: '10px',
-          position: 'relative',
-          zIndex: 20
-        }}>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#FF5F56' }}></div>
-            <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#FFBD2E' }}></div>
-            <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#27C93F' }}></div>
-          </div>
-
-          {/* Mobile Menu Toggle */}
-          <button
-            className="mobile-menu-btn"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            style={{
-              background: 'transparent',
-              border: '1px solid rgba(130, 170, 255, 0.3)',
-              borderRadius: '4px',
-              color: '#82AAFF',
-              padding: '2px 8px',
-              fontSize: '0.7rem',
-              marginLeft: '10px',
-              cursor: 'pointer',
-              display: 'none' // Hidden by default, shown in CSS
-            }}
-          >
-            {isMobileMenuOpen ? 'Close Files' : '📂 Files'}
-          </button>
-
-          <div className="ide-title" style={{
-            marginLeft: 'auto',
-            marginRight: 'auto',
-            color: '#A6ACCD',
-            fontSize: '0.85rem',
-            fontFamily: 'var(--font-mono)',
-            opacity: 0.7,
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            maxWidth: '200px'
-          }}>
-            VanshAgrawal — Portfolio — <HyperText text={`${activeProject.folder}/${activeProject.file}`} />
-          </div>
-        </div>
-
-        {/* IDE Main Area */}
-        <div style={{ display: 'flex', flex: 1, overflow: 'hidden', position: 'relative' }}>
-
-          {/* Sidebar: Explorer (Desktop & Mobile Drawer) */}
-          <div className={`ide-sidebar ${isMobileMenuOpen ? 'mobile-open' : ''}`} style={{
-            width: '250px',
-            background: 'rgba(19, 21, 30, 0.95)',
-            borderRight: '1px solid #000',
-            display: 'flex',
-            flexDirection: 'column',
-            flexShrink: 0,
-            transition: 'transform 0.3s ease',
-            zIndex: 10
-          }}>
-            <div style={{
-              padding: '10px 15px',
-              fontSize: '0.75rem',
-              fontWeight: 600,
-              color: '#A6ACCD',
-              letterSpacing: '1px',
-              textTransform: 'uppercase',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center'
-            }}>
-              Explorer
-              <span
-                className="close-sidebar-mobile"
-                onClick={() => setIsMobileMenuOpen(false)}
-                style={{ cursor: 'pointer', display: 'none' }}
-              >✕</span>
-            </div>
-
-            <div style={{ overflowY: 'auto', flex: 1 }}>
-              {/* Root Folder */}
-              <div style={{ marginBottom: '5px' }}>
-                <div style={{
-                  padding: '4px 15px',
-                  color: '#A6ACCD',
-                  fontSize: '0.9rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  fontWeight: 600
-                }}>
-                  <span>⌄</span> <span>PORTFOLIO</span>
-                </div>
-
-                {/* Sub Folders */}
-                <div style={{ marginLeft: '10px' }}>
-                  {folders.map(folder => (
-                    <div key={folder}>
-                      <div
-                        onClick={() => toggleFolder(folder)}
-                        style={{
-                          padding: '4px 15px',
-                          color: '#A6ACCD',
-                          fontSize: '0.9rem',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '6px',
-                          opacity: 0.9
-                        }}
-                        onMouseEnter={e => e.currentTarget.style.color = '#fff'}
-                        onMouseLeave={e => e.currentTarget.style.color = '#A6ACCD'}
-                      >
-                        <span style={{ fontSize: '0.8rem', transform: expandedFolders.includes(folder) ? 'rotate(0deg)' : 'rotate(-90deg)', transition: 'transform 0.2s' }}>⌄</span>
-                        <span style={{ color: folder === 'ai-ml' ? '#C792EA' : folder === 'web-apps' ? '#82AAFF' : '#C3E88D' }}>📂</span>
-                        {folder}
-                      </div>
-
-                      <AnimatePresence>
-                        {expandedFolders.includes(folder) && (
-                          <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: 'auto', opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            style={{ overflow: 'hidden' }}
-                          >
-                            {projects.filter(p => p.folder === folder).map(p => (
-                              <div
-                                key={p.id}
-                                onClick={() => {
-                                  setActiveProject(p);
-                                  setIsMobileMenuOpen(false); // Close menu on selection
-                                }}
-                                style={{
-                                  padding: '4px 15px 4px 32px',
-                                  color: activeProject.id === p.id ? '#fff' : '#676E95',
-                                  background: activeProject.id === p.id ? 'rgba(130, 170, 255, 0.1)' : 'transparent',
-                                  fontSize: '0.85rem',
-                                  cursor: 'pointer',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  gap: '8px',
-                                  fontFamily: 'var(--font-mono)',
-                                  borderLeft: activeProject.id === p.id ? '2px solid #82AAFF' : '2px solid transparent'
-                                }}
-                              >
-                                <span>{p.icon}</span> {p.file}
-                              </div>
-                            ))}
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Editor Area */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: 'rgba(15, 17, 26, 0.95)' }}>
-
-            {/* File Tab */}
-            <div style={{
-              display: 'flex',
-              background: 'rgba(19, 21, 30, 0.95)',
-              borderBottom: '1px solid #000'
-            }}>
-              <div style={{
-                padding: '8px 20px',
-                background: 'rgba(15, 17, 26, 0.95)',
-                color: '#fff',
-                fontSize: '0.85rem',
-                fontFamily: 'var(--font-mono)',
-                borderTop: `1px solid ${activeProject.color}`,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-              }}>
-                <span>{activeProject.icon}</span>
-                {activeProject.file}
-                <span style={{ marginLeft: '10px', fontSize: '1rem', cursor: 'pointer', opacity: 0.5 }}>×</span>
-              </div>
-            </div>
-
-            {/* Code Content */}
-            <div style={{
-              flex: 1,
-              padding: '30px',
-              overflowY: 'auto',
-              fontFamily: 'var(--font-mono)',
-              fontSize: '1rem',
-              lineHeight: 1.6,
-              color: '#A6ACCD'
-            }}>
-              {/* Imports */}
-              <div>
-                <span style={{ color: '#C792EA' }}>import</span> {'{'}
-                {activeProject.tech.map((t, i) => (
-                  <span key={t}>
-                    <span style={{ color: '#FFCB6B' }}> {t}</span>{i < activeProject.tech.length - 1 ? ',' : ''}
-                  </span>
-                ))}
-                {' }'} <span style={{ color: '#C792EA' }}>from</span> <span style={{ color: '#C3E88D' }}>'./lib'</span>;
-              </div>
-              <br />
-
-              {/* Class Definition */}
-              <div>
-                <span style={{ color: '#C792EA' }}>class</span> <span style={{ color: '#FFCB6B' }}>{activeProject.name}</span> <span style={{ color: '#C792EA' }}>extends</span> <span style={{ color: '#82AAFF' }}>Project</span> {'{'}
-              </div>
-
-              {/* Documentation Comment */}
-              <div style={{ marginLeft: '20px', color: '#676E95' }}>
-                /**<br />
-                * {activeProject.description}<br />
-                * <br />
-                * @features<br />
-                {activeProject.features.map(f => (
-                  <span key={f}>* - {f}<br /></span>
-                ))}
-                */
-              </div>
-
-              {/* Constructor/Run */}
-              <div style={{ marginLeft: '20px' }}>
-                <br />
-                <span style={{ color: '#82AAFF' }}>constructor</span>() {'{'} <br />
-                <span style={{ marginLeft: '20px', color: '#89DDFF' }}>this</span>.<span style={{ color: '#F07178' }}>id</span> = <span style={{ color: '#F78C6C' }}>{activeProject.id}</span>;<br />
-                <span style={{ marginLeft: '20px', color: '#89DDFF' }}>this</span>.<span style={{ color: '#F07178' }}>category</span> = <span style={{ color: '#C3E88D' }}>'{activeProject.category}'</span>;<br />
-                {'}'}
-              </div>
-
-              {/* Render Method */}
-              <div style={{ marginLeft: '20px' }}>
-                <br />
-                <span style={{ color: '#82AAFF' }}>async run</span>() {'{'} <br />
-                <span style={{ color: '#C792EA' }}>await</span> <span style={{ color: '#FFCB6B' }}>deployment</span>.<span style={{ color: '#82AAFF' }}>start</span>();<br />
-                <span style={{ color: '#C792EA' }}>return</span> <span style={{ color: '#C3E88D' }}>"Project Online"</span>;<br />
-                {'}'}
-              </div>
-
-              <div>{'}'}</div>
-
-            </div>
-
-            {/* Terminal Panel */}
-            <div style={{
-              height: 'auto',
-              minHeight: '140px',
-              flexShrink: 0,
-              background: '#13151E',
-              borderTop: '1px solid #000',
-              padding: '10px',
-              fontFamily: 'var(--font-mono)'
-            }}>
-              <div style={{
-                display: 'flex',
-                gap: '20px',
-                fontSize: '0.8rem',
-                textTransform: 'uppercase',
-                color: '#676E95',
-                borderBottom: '1px solid rgba(255,255,255,0.1)',
-                paddingBottom: '5px',
-                marginBottom: '10px'
-              }}>
-                <span style={{ color: '#fff', borderBottom: '1px solid #82AAFF' }}>Terminal</span>
-                <span>Output</span>
-                <span>Debug Console</span>
-              </div>
-
-              <div style={{ fontSize: '0.9rem', color: '#A6ACCD' }}>
-                <span style={{ color: '#C3E88D' }}>➜</span> <span style={{ color: '#82AAFF' }}>~/{activeProject.folder}</span> git clone {activeProject.github} <br />
-                <br />
-                <div style={{ display: 'flex', gap: '15px' }}>
-                  <a
-                    href={activeProject.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      textDecoration: 'none',
-                      background: '#24283b',
-                      color: '#fff',
-                      padding: '8px 16px',
-                      borderRadius: '4px',
-                      border: '1px solid #414868',
-                      fontSize: '0.85rem',
-                      display: 'flex', alignItems: 'center', gap: '8px',
-                      transition: 'all 0.2s'
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.background = '#414868'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = '#24283b'; }}
-                  >
-                    <span>😺</span> Open GitHub
-                  </a>
-
-                  <a
-                    href={activeProject.live}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      textDecoration: 'none',
-                      background: activeProject.color,
-                      color: '#000',
-                      padding: '8px 16px',
-                      borderRadius: '4px',
-                      fontSize: '0.85rem',
-                      fontWeight: 600,
-                      display: 'flex', alignItems: 'center', gap: '8px',
-                      opacity: 0.9,
-                      transition: 'all 0.2s'
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.opacity = '1'; }}
-                    onMouseLeave={e => { e.currentTarget.style.opacity = '0.9'; }}
-                  >
-                    <span>🚀</span> Live Demo
-                  </a>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </motion.div>
-
-      <style>{`
-        @media (max-width: 768px) {
-          .ide-sidebar {
-            position: absolute;
-            top: 40px; /* Below top bar */
-            bottom: 0;
-            left: 0;
-            width: 100% !important;
-            z-index: 100;
-            transform: translateX(-100%);
-          }
-          .ide-sidebar.mobile-open {
-            transform: translateX(0);
-          }
-          .mobile-menu-btn {
-            display: block !important;
-          }
-          .close-sidebar-mobile {
-            display: block !important;
-          }
-          .ide-title {
-            max-width: 150px;
-            font-size: 0.75rem !important;
-          }
-          .projects-ide {
-            padding: 80px 15px !important;
-          }
-        }
-        /* Custom scrollbar for editor */
-        ::-webkit-scrollbar {
-          width: 10px;
-        }
-        ::-webkit-scrollbar-track {
-          background: #13151E; 
-        }
-        ::-webkit-scrollbar-thumb {
-          background: #2b2f40; 
-          border-radius: 5px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-          background: #3b4055; 
-        }
-      `}</style>
-    </section>
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+    </svg>
   );
 }
 
+function ExternalIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+      <polyline points="15 3 21 3 21 9"/>
+      <line x1="10" y1="14" x2="21" y2="3"/>
+    </svg>
+  );
+}
+
+export default function Projects() {
+  const containerRef = useRef(null);
+  const trackRef     = useRef(null);
+
+  const [activeNum, setActiveNum] = useState("01");
+  const [trackWidth, setTrackWidth] = useState(0);
+  const [viewportWidth, setViewportWidth] = useState(0);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (trackRef.current) {
+        setTrackWidth(trackRef.current.scrollWidth);
+      }
+      setViewportWidth(window.innerWidth);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const isMobile = viewportWidth > 0 && viewportWidth < 768;
+
+  // Vertical scroll space driving horizontal track scroll (Desktop only)
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+  });
+
+  const maxScroll = -(trackWidth - viewportWidth + 100);
+  const x = useTransform(scrollYProgress, [0, 1], [0, maxScroll < 0 ? maxScroll : 0]);
+  const smoothX = useSpring(x, { stiffness: 60, damping: 18, mass: 0.8 });
+
+  // Update background counter based on active visible card
+  useEffect(() => {
+    const unsubscribe = scrollYProgress.on("change", (v) => {
+      const idx = Math.min(
+        Math.floor(v * projects.length),
+        projects.length - 1
+      );
+      setActiveNum(projects[idx].num);
+    });
+    return () => unsubscribe();
+  }, [scrollYProgress]);
+
+  return (
+    <div id="projects" ref={containerRef} className={`relative bg-cream dark:bg-zinc-950 ${isMobile ? "py-16" : "h-[350vh]"}`}>
+      {/* Sticky layout container (only sticky on desktop) */}
+      <div className={`${isMobile ? "flex flex-col gap-16" : "sticky top-0 h-screen overflow-hidden flex flex-col justify-between py-16"}`}>
+
+        {/* Section title — clip-path wipe entrance */}
+        <div className="section-container w-full">
+          <motion.div
+            initial={{ clipPath: "inset(0 100% 0 0)", opacity: 0 }}
+            whileInView={{ clipPath: "inset(0 0% 0 0)", opacity: 1 }}
+            viewport={{ once: true, amount: 0.5 }}
+            transition={{ duration: 0.7, ease: [0.33,1,0.68,1] }}
+          >
+            <p className="label-text mb-2 text-indigo">Works Showcase</p>
+          </motion.div>
+          <TextReveal
+            as="h2"
+            className="display-text text-zinc-900 dark:text-white"
+            style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)" }}
+            delay={0.06}
+            stagger={0.06}
+            duration={0.9}
+          >
+            Things I've built.
+          </TextReveal>
+        </div>
+
+        {/* Giant morphing background numbering (hidden on mobile for cleaner look) */}
+        {!isMobile && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden z-0 opacity-10 dark:opacity-[0.03]">
+            <motion.div
+              key={activeNum}
+              initial={{ opacity: 0, scale: 0.7, filter: "blur(20px)" }}
+              animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+              exit={{ opacity: 0, scale: 1.3, filter: "blur(20px)" }}
+              transition={{ duration: 0.8, ease: [0.33, 1, 0.68, 1] }}
+              className="font-display italic text-[35vw] leading-none text-zinc-900 dark:text-white"
+            >
+              {activeNum}
+            </motion.div>
+          </div>
+        )}
+
+        {/* Projects track (horizontal on desktop, vertical stack on mobile) */}
+        <div className="relative flex-grow flex items-center z-10 w-full">
+          <motion.div
+            ref={trackRef}
+            style={isMobile ? {} : { x: smoothX }}
+            className={`flex w-full ${isMobile ? "flex-col items-center gap-12 px-6" : "items-center gap-16 px-[20vw] h-[480px]"}`}
+          >
+            {projects.map((project, idx) => (
+              <ProjectScrollCard key={project.id} project={project} index={idx} isMobile={isMobile} />
+            ))}
+          </motion.div>
+        </div>
+
+        {/* Swipe tips (hidden on mobile since it scrolls vertically) */}
+        {!isMobile && (
+          <div className="section-container w-full flex items-center justify-between z-10 text-xs font-semibold text-zinc-400 dark:text-zinc-500 tracking-wider">
+            <p>◀ SCROLL TO DISCOVER PROJECTS ▶</p>
+            <p>HOVER CARDS TO TILT &amp; GLOW ⚡</p>
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+}
+
+/* ── Project Scroll Card component ── */
+function ProjectScrollCard({ project, index, isMobile }) {
+  const cardRef = useRef(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const rotateX = useSpring(x, { stiffness: 100, damping: 20 });
+  const rotateY = useSpring(y, { stiffness: 100, damping: 20 });
+
+  const [hovered, setHovered] = useState(false);
+  const [coords, setCoords]   = useState({ x: 0, y: 0 });
+
+  const handleMouseMove = (e) => {
+    if (isMobile) return; // Disable tilt on mobile
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const w = rect.width;
+    const h = rect.height;
+    
+    // Spotlight coordinates relative to card
+    setCoords({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    });
+
+    // 3D tilt angles
+    const mx = e.clientX - rect.left - w / 2;
+    const my = e.clientY - rect.top - h / 2;
+    x.set(-my / 10);
+    y.set(mx / 10);
+  };
+
+  const handleMouseLeave = () => {
+    setHovered(false);
+    if (isMobile) return;
+    x.set(0);
+    y.set(0);
+  };
+
+  const isEven = index % 2 === 0;
+
+  return (
+    <motion.div
+      ref={cardRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      onMouseEnter={() => setHovered(true)}
+      initial={isMobile
+        ? { opacity: 0, y: 60, clipPath: "inset(20% 0 20% 0 round 2rem)" }
+        : { opacity: 0, scale: 0.88, rotateY: 12, filter: "blur(6px)", clipPath: "inset(0 0 30% 0 round 2.5rem)" }
+      }
+      whileInView={isMobile
+        ? { opacity: 1, y: 0, clipPath: "inset(0% 0 0% 0 round 2rem)" }
+        : { opacity: 1, scale: 1, rotateY: 0, filter: "blur(0px)", clipPath: "inset(0% 0 0% 0 round 2.5rem)" }
+      }
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: isMobile ? 0.05 * index : index * 0.1 }}
+      style={isMobile ? {
+        boxShadow: hovered ? `0 20px 40px ${project.accent}1c` : "var(--shadow-sm)",
+        borderTop: `4px solid ${hovered ? project.accent : `${project.accent}55`}`,
+      } : {
+        rotateX,
+        rotateY,
+        transformStyle: "preserve-3d",
+        y: isEven ? -20 : 20,
+        boxShadow: hovered ? `0 30px 60px ${project.accent}24` : "var(--shadow-md)",
+        borderTop: `4px solid ${hovered ? project.accent : `${project.accent}55`}`,
+      }}
+      className={`relative p-8 rounded-[2.5rem] glass dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800/80 transition-all duration-300 w-full max-w-[500px] flex-shrink-0 z-20 flex flex-col justify-between ${isMobile ? "h-auto min-h-[380px]" : "h-[400px] cursor-none"}`}
+    >
+      {/* Glow spotlight follow */}
+      <div
+        className="absolute inset-0 pointer-events-none transition-opacity duration-500 rounded-[2.5rem]"
+        style={{
+          background: `radial-gradient(350px circle at ${coords.x}px ${coords.y}px, ${project.accent}14, transparent 80%)`,
+          opacity: hovered ? 1 : 0,
+          zIndex: 0,
+        }}
+      />
+
+      {/* Contents inside 3D layered space */}
+      <div style={{ transform: "translateZ(30px)" }} className="flex flex-col h-full justify-between">
+        
+        {/* Top details */}
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <span
+                className="flex items-center justify-center w-11 h-11 rounded-2xl text-2xl"
+                style={{ background: `${project.accent}18` }}
+              >
+                {project.emoji}
+              </span>
+              <span className="tag-pill text-[10px] font-bold uppercase tracking-wider">
+                {project.category}
+              </span>
+            </div>
+            <span
+              className="font-display italic text-3xl transition-all duration-300"
+              style={{
+                color: hovered ? project.accent : "var(--text-subtle)",
+                opacity: hovered ? 0.75 : 0.45,
+              }}
+            >
+              {project.num}
+            </span>
+          </div>
+
+          <h3
+            className="font-display italic text-4xl mb-3"
+            style={{ color: project.accent }}
+          >
+            {project.name}
+          </h3>
+          <p className="text-zinc-500 dark:text-zinc-400 leading-relaxed text-sm">
+            {project.description}
+          </p>
+        </div>
+
+        {/* Bottom tags + actions */}
+        <div>
+          <div className="flex flex-wrap gap-1.5 mb-6">
+            {project.tech.map((t) => (
+              <span
+                key={t}
+                className="text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border transition-all duration-300"
+                style={{
+                  background: hovered ? `${project.accent}12` : "var(--bg-surface)",
+                  color: hovered ? project.accent : "var(--text-muted)",
+                  borderColor: hovered ? `${project.accent}30` : "var(--border)",
+                }}
+              >
+                {t}
+              </span>
+            ))}
+          </div>
+
+          <div
+            className="flex items-center gap-4 pt-5"
+            style={{ borderTop: "1px solid var(--border)" }}
+          >
+            <Magnetic strength={0.25} radius={60}>
+              <a
+                href={project.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-sm font-medium transition-all duration-200 hover:opacity-70 text-zinc-500"
+                id={`project-github-scroll-${project.id}`}
+              >
+                <GitHubIcon /> GitHub
+              </a>
+            </Magnetic>
+
+            {project.live !== "#" && (
+              <Magnetic strength={0.3} radius={70} className="ml-auto">
+                <a
+                  href={project.live}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 px-5 py-2.5 rounded-full text-xs font-semibold text-white transition-all duration-200 hover:opacity-85"
+                  style={{ background: project.accent }}
+                  id={`project-live-scroll-${project.id}`}
+                >
+                  <ExternalIcon /> Live Demo
+                </a>
+              </Magnetic>
+            )}
+          </div>
+        </div>
+
+      </div>
+    </motion.div>
+  );
+}

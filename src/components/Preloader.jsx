@@ -1,202 +1,110 @@
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+
+const PHRASES = ["VANSH AGRAWAL", "AIML ENGINEER", "FULL STACK DEV"];
 
 export default function Preloader({ onComplete }) {
-    const [progress, setProgress] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const [phase, setPhase]       = useState("counting"); // counting | done | exit
 
-    useEffect(() => {
-        let currentProgress = 0;
-        const updateProgress = () => {
-            // Start progressing after the initial code lines are revealed
-            currentProgress += Math.random() * 12;
-            if (currentProgress >= 100) {
-                currentProgress = 100;
-                setProgress(100);
-                setTimeout(onComplete, 1200); // Hold at 100% so the user sees "System Ready"
-            } else {
-                setProgress(Math.floor(currentProgress));
-                setTimeout(updateProgress, Math.random() * 80 + 20);
-            }
-        };
-        // Delay the start of the progress bar until the code is fully revealed
-        setTimeout(updateProgress, 1000); 
-    }, [onComplete]);
+  useEffect(() => {
+    let val = 0;
+    const tick = () => {
+      const step = Math.random() * 14 + 3;
+      val = Math.min(val + step, 100);
+      setProgress(Math.floor(val));
+      if (val < 100) {
+        setTimeout(tick, Math.random() * 90 + 30);
+      } else {
+        setPhase("done");
+        setTimeout(() => {
+          setPhase("exit");
+          setTimeout(onComplete, 900);
+        }, 700);
+      }
+    };
+    const t = setTimeout(tick, 300);
+    return () => clearTimeout(t);
+  }, [onComplete]);
 
-    return (
+  const paddedProgress = String(progress).padStart(2, "0");
+
+  return (
+    <motion.div
+      key="preloader"
+      className="fixed inset-0 z-[99999] flex flex-col items-center justify-center overflow-hidden"
+      style={{ background: "var(--bg)" }}
+      initial={{ opacity: 1 }}
+      exit={{ y: "-100%" }}
+      transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
+    >
+      {/* Dot grid background */}
+      <div
+        className="absolute inset-0 bg-dot-pattern pointer-events-none"
+        style={{ opacity: 0.4 }}
+      />
+
+      {/* Main counter */}
+      <div className="relative z-10 text-center select-none">
         <motion.div
-            initial={{ opacity: 1 }}
-            exit={{ opacity: 0, filter: "blur(15px)", scale: 1.05 }}
-            transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
-            style={{
-                position: "fixed",
-                inset: 0,
-                background: "#000000", // Exactly matches site's pure black
-                zIndex: 99999,
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                fontFamily: "var(--font-mono, monospace)",
-                color: "var(--white, #EEFFFF)",
-                overflow: "hidden"
-            }}
+          className="font-display"
+          style={{
+            fontSize: "clamp(6rem, 20vw, 16rem)",
+            lineHeight: 1,
+            color: "var(--text)",
+            letterSpacing: "-0.04em",
+            fontStyle: "italic",
+          }}
+          key={progress}
+          initial={{ opacity: 0.6 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.05 }}
         >
-            {/* Subtle Vercel-style Dot Grid Background */}
-            <div style={{
-                position: "absolute",
-                inset: 0,
-                backgroundImage: "radial-gradient(rgba(137, 221, 255, 0.15) 1.5px, transparent 1.5px)", // Matches site dot opacity
-                backgroundSize: "32px 32px",
-                backgroundPosition: "center",
-                pointerEvents: "none"
-            }} />
-            
-            {/* Glowing Ambient Orb behind the window for depth */}
-            <motion.div 
-                animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.4, 0.2] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                style={{
-                    position: "absolute",
-                    width: "40vw",
-                    height: "40vw",
-                    background: "radial-gradient(circle, rgba(199, 146, 234, 0.15) 0%, transparent 70%)",
-                    filter: "blur(40px)",
-                    zIndex: 0
-                }}
-            />
-
-            {/* Glassmorphic Code Editor Window */}
-            <motion.div 
-                initial={{ y: 40, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
-                style={{
-                    background: "rgba(10, 10, 10, 0.65)",
-                    backdropFilter: "blur(16px)",
-                    WebkitBackdropFilter: "blur(16px)",
-                    border: "1px solid rgba(137, 221, 255, 0.15)",
-                    borderRadius: "12px",
-                    width: "90%",
-                    maxWidth: "550px",
-                    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 30px rgba(137, 221, 255, 0.03)",
-                    display: "flex",
-                    flexDirection: "column",
-                    zIndex: 1,
-                    overflow: "hidden"
-                }}
-            >
-                {/* macOS Window Controls Header */}
-                <div style={{ 
-                    display: "flex", 
-                    alignItems: "center",
-                    padding: "16px 20px",
-                    background: "rgba(255, 255, 255, 0.03)",
-                    borderBottom: "1px solid rgba(255, 255, 255, 0.05)"
-                }}>
-                    <div style={{ display: "flex", gap: "8px" }}>
-                        <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#FF5F56", boxShadow: "0 0 10px rgba(255, 95, 86, 0.5)" }} />
-                        <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#FFBD2E", boxShadow: "0 0 10px rgba(255, 189, 46, 0.5)" }} />
-                        <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#27C93F", boxShadow: "0 0 10px rgba(39, 201, 63, 0.5)" }} />
-                    </div>
-                    
-                    <span style={{ margin: "0 auto", fontSize: "0.8rem", color: "#546E7A", letterSpacing: "1px", transform: "translateX(-18px)" }}>
-                        portfolio.js — AIML_Workspace
-                    </span>
-                </div>
-
-                {/* Code Content */}
-                <div style={{ padding: "30px", fontSize: "clamp(0.95rem, 2.5vw, 1.15rem)", lineHeight: "1.8" }}>
-                    
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }}>
-                        <span style={{ color: "#C792EA" }}>const</span>{" "}
-                        <span style={{ color: "#FFCB6B" }}>portfolio</span>{" "}
-                        <span style={{ color: "#89DDFF" }}>=</span> {"{"}
-                    </motion.div>
-                    
-                    <motion.div 
-                        initial={{ opacity: 0, x: -10 }} 
-                        animate={{ opacity: 1, x: 0 }} 
-                        transition={{ delay: 0.3 }}
-                        style={{ paddingLeft: "24px" }}
-                    >
-                        <span style={{ color: "#82AAFF" }}>developer</span>:{" "}
-                        <span style={{ color: "#C3E88D" }}>"Vansh Agrawal"</span>,
-                    </motion.div>
-                    
-                    <motion.div 
-                        initial={{ opacity: 0, x: -10 }} 
-                        animate={{ opacity: 1, x: 0 }} 
-                        transition={{ delay: 0.5 }}
-                        style={{ paddingLeft: "24px" }}
-                    >
-                        <span style={{ color: "#82AAFF" }}>role</span>:{" "}
-                        <span style={{ color: "#C3E88D" }}>"AIML Engineer"</span>,
-                    </motion.div>
-                    
-                    <motion.div 
-                         initial={{ opacity: 0, x: -10 }} 
-                         animate={{ opacity: 1, x: 0 }} 
-                         transition={{ delay: 0.7 }}
-                        style={{ paddingLeft: "24px" }}
-                    >
-                        <span style={{ color: "#82AAFF" }}>status</span>:{" "}
-                        <span style={{ color: "#C3E88D" }}>
-                            {progress < 100 ? '"Compiling modules..."' : '"System Ready"'}
-                        </span>,
-                    </motion.div>
-                    
-                    <motion.div 
-                        initial={{ opacity: 0, x: -10 }} 
-                        animate={{ opacity: 1, x: 0 }} 
-                        transition={{ delay: 0.9 }}
-                        style={{ paddingLeft: "24px", display: "flex", alignItems: "center", gap: "10px" }}
-                    >
-                        <span style={{ color: "#82AAFF" }}>progress</span>:{" "}
-                        <span style={{ 
-                            color: progress === 100 ? "#C3E88D" : "#F78C6C",
-                            textShadow: `0 0 10px ${progress === 100 ? "rgba(195, 232, 141, 0.5)" : "rgba(247, 140, 108, 0.5)"}`
-                        }}>
-                            {progress}
-                        </span>
-                        
-                        {/* Blinking Cursor */}
-                        <motion.span
-                            animate={{ opacity: [1, 0] }}
-                            transition={{ repeat: Infinity, duration: 0.8 }}
-                            style={{ width: "8px", height: "18px", background: "#89DDFF", display: "inline-block", marginLeft: "4px", position: "relative", top: "2px" }}
-                        />
-                    </motion.div>
-
-                    <motion.div 
-                        initial={{ opacity: 0 }} 
-                        animate={{ opacity: 1 }} 
-                        transition={{ delay: 1.1 }}
-                    >
-                        {"};"}
-                    </motion.div>
-                    
-                    {/* Glowing Progress Line */}
-                    <div style={{
-                        marginTop: "30px",
-                        width: "100%",
-                        height: "3px",
-                        background: "rgba(255, 255, 255, 0.05)",
-                        borderRadius: "2px",
-                        overflow: "hidden",
-                        position: "relative"
-                    }}>
-                        <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: `${progress}%` }}
-                            transition={{ ease: "linear", duration: 0.2 }}
-                            style={{
-                                height: "100%",
-                                background: "linear-gradient(90deg, #C792EA, #89DDFF)",
-                                boxShadow: "0 0 15px rgba(137, 221, 255, 0.8)"
-                            }}
-                        />
-                    </div>
-                </div>
-            </motion.div>
+          {paddedProgress}
         </motion.div>
-    );
+
+        {/* Label */}
+        <motion.p
+          className="label-text mt-6 tracking-widest"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.6 }}
+        >
+          {phase === "done" ? "Ready" : "Loading portfolio"}
+        </motion.p>
+      </div>
+
+      {/* Name reveal strip */}
+      <motion.div
+        className="absolute bottom-24 left-0 right-0 flex justify-center overflow-hidden"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.4, duration: 0.6 }}
+      >
+        <p
+          className="label-text text-center"
+          style={{ letterSpacing: "0.25em", fontSize: "0.7rem" }}
+        >
+          {PHRASES[0]}
+        </p>
+      </motion.div>
+
+      {/* Progress bar */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-[2px]"
+        style={{ background: "var(--border)" }}
+      >
+        <motion.div
+          className="h-full"
+          style={{
+            background: "linear-gradient(90deg, var(--accent), var(--accent-rose))",
+            originX: 0,
+          }}
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: progress / 100 }}
+          transition={{ ease: "linear", duration: 0.15 }}
+        />
+      </div>
+    </motion.div>
+  );
 }
