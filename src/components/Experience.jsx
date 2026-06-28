@@ -33,7 +33,7 @@ export default function Experience() {
 
   const [activeYear, setActiveYear] = useState("2020");
   const [trackWidth, setTrackWidth] = useState(0);
-  const [viewportWidth, setViewportWidth] = useState(0);
+  const [viewportWidth, setViewportWidth] = useState(() => typeof window !== "undefined" ? window.innerWidth : 0);
 
   // Monitor screen resizing to compute scrollable bounds
   useEffect(() => {

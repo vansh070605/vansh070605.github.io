@@ -48,7 +48,7 @@ export default function Skills() {
 
   const [activeTab, setActiveTab] = useState(TABS[0]);
   const [trackWidth, setTrackWidth] = useState(0);
-  const [viewportWidth, setViewportWidth] = useState(0);
+  const [viewportWidth, setViewportWidth] = useState(() => typeof window !== "undefined" ? window.innerWidth : 0);
 
   useEffect(() => {
     const handleResize = () => {

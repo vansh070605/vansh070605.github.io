@@ -102,7 +102,7 @@ export default function Projects() {
 
   const [activeNum, setActiveNum] = useState("01");
   const [trackWidth, setTrackWidth] = useState(0);
-  const [viewportWidth, setViewportWidth] = useState(0);
+  const [viewportWidth, setViewportWidth] = useState(() => typeof window !== "undefined" ? window.innerWidth : 0);
 
   useEffect(() => {
     const handleResize = () => {
@@ -255,11 +255,11 @@ function ProjectScrollCard({ project, index, isMobile }) {
       onMouseLeave={handleMouseLeave}
       onMouseEnter={() => setHovered(true)}
       initial={isMobile
-        ? { opacity: 0, y: 60, clipPath: "inset(20% 0 20% 0 round 2rem)" }
+        ? { opacity: 0, y: 60, filter: "none", clipPath: "inset(20% 0 20% 0 round 2rem)" }
         : { opacity: 0, scale: 0.88, rotateY: 12, filter: "blur(6px)", clipPath: "inset(0 0 30% 0 round 2.5rem)" }
       }
       whileInView={isMobile
-        ? { opacity: 1, y: 0, clipPath: "inset(0% 0 0% 0 round 2rem)" }
+        ? { opacity: 1, y: 0, filter: "none", clipPath: "inset(0% 0 0% 0 round 2rem)" }
         : { opacity: 1, scale: 1, rotateY: 0, filter: "blur(0px)", clipPath: "inset(0% 0 0% 0 round 2.5rem)" }
       }
       viewport={{ once: true, margin: "-40px" }}
