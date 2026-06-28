@@ -6,8 +6,8 @@ const EASE = [0.33, 1, 0.68, 1];
 
 const STATS = [
   { value: "7.86", label: "CGPA", decimals: 2, suffix: "/10" },
-  { value: "8", label: "Projects Built", decimals: 0, suffix: "+" },
-  { value: "2", label: "Internships", decimals: 0, suffix: "" },
+  { value: "60", label: "Projects Built", decimals: 0, suffix: "+" },
+  { value: "3", label: "Internships", decimals: 0, suffix: "" },
   { value: "7", label: "Semester", decimals: 0, suffix: "th" },
 ];
 
