@@ -24,39 +24,39 @@ function LiveClock() {
 }
 
 const NAV_LINKS = [
-  { name: "About",      href: "#about"      },
-  { name: "Projects",   href: "#projects"   },
-  { name: "Skills",     href: "#skills"     },
+  { name: "About", href: "#about" },
+  { name: "Projects", href: "#projects" },
+  { name: "Skills", href: "#skills" },
   { name: "Experience", href: "#experience" },
-  { name: "Contact",    href: "#contact"    },
+  { name: "Contact", href: "#contact" },
 ];
 
 function MoonIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
     </svg>
   );
 }
 function SunIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="5"/>
-      <line x1="12" y1="1" x2="12" y2="3"/>
-      <line x1="12" y1="21" x2="12" y2="23"/>
-      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-      <line x1="1" y1="12" x2="3" y2="12"/>
-      <line x1="21" y1="12" x2="23" y2="12"/>
-      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+      <circle cx="12" cy="12" r="5" />
+      <line x1="12" y1="1" x2="12" y2="3" />
+      <line x1="12" y1="21" x2="12" y2="23" />
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+      <line x1="1" y1="12" x2="3" y2="12" />
+      <line x1="21" y1="12" x2="23" y2="12" />
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
     </svg>
   );
 }
 
 export default function Navbar({ isDark, toggleDark }) {
-  const [scrolled,   setScrolled]   = useState(false);
-  const [menuOpen,   setMenuOpen]   = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [activeLink, setActiveLink] = useState("");
   const { scrollY } = useScroll();
 
@@ -231,7 +231,7 @@ export default function Navbar({ isDark, toggleDark }) {
           {/* Resume button */}
           <Magnetic strength={0.32} radius={70}>
             <a
-              href="/Vansh_Agrawal_Resume.pdf"
+              href="public/Resume - Vansh Agrawal.pdf"
               target="_blank"
               rel="noopener noreferrer"
               className="hidden md:flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold transition-all duration-200 hover:opacity-85"
@@ -332,7 +332,7 @@ function NavLink({ link, active, onClick }) {
       onClick={onClick}
       className="relative px-3.5 py-2 rounded-full text-sm font-medium transition-all duration-200 group"
       style={{
-        color:      active ? "var(--text)" : "var(--text-muted)",
+        color: active ? "var(--text)" : "var(--text-muted)",
         background: active ? "var(--bg-surface)" : "transparent",
         border: "none",
         fontSize: "0.85rem",
@@ -343,9 +343,9 @@ function NavLink({ link, active, onClick }) {
       <span
         className="absolute bottom-1 left-1/2 -translate-x-1/2 h-[2px] rounded-full transition-all duration-300"
         style={{
-          width:      active ? "60%" : "0%",
+          width: active ? "60%" : "0%",
           background: "var(--accent)",
-          opacity:    active ? 1 : 0,
+          opacity: active ? 1 : 0,
         }}
       />
       {/* Hover bg */}
