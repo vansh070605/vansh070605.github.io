@@ -231,7 +231,7 @@ export default function Navbar({ isDark, toggleDark }) {
           {/* Resume button */}
           <Magnetic strength={0.32} radius={70}>
             <a
-              href="public/Resume.pdf"
+              href="/Resume.pdf"
               target="_blank"
               rel="noopener noreferrer"
               className="hidden md:flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold transition-all duration-200 hover:opacity-85"
