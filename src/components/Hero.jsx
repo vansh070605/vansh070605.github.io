@@ -164,7 +164,7 @@ export default function Hero() {
                 maxWidth: "520px",
               }}
             >
-              6th-semester AIML Engineering student passionate about deep
+              7th-semester AIML Engineering student passionate about deep
               learning, computer vision, and full-stack development. Turning
               complex problems into clean, scalable solutions.
             </p>
