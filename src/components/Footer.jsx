@@ -1,5 +1,6 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
+import Signature from "./Signature";
 
 const SOCIAL_LINKS = [
   {
@@ -303,73 +304,8 @@ export default function Footer() {
           © {new Date().getFullYear()} Vansh Agrawal · All rights reserved
         </motion.p>
 
-        {/* Dancing Script signature */}
-        <motion.div
-          variants={{
-            hidden: { opacity: 0, x: 24 },
-            visible: {
-              opacity: 1, x: 0,
-              transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.45 },
-            },
-          }}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          className="relative inline-flex flex-col"
-          style={{
-            fontFamily: "'Dancing Script', cursive",
-            fontSize: "clamp(1.6rem, 2.5vw, 2.2rem)",
-            fontWeight: 700,
-            letterSpacing: "0.01em",
-            lineHeight: 1.1,
-          }}
-        >
-          <div className="flex select-none">
-            {"Vansh Agrawal".split("").map((char, index) => (
-              <motion.span
-                key={index}
-                initial={{ opacity: 0, y: 12, filter: "blur(2px)" }}
-                animate={isInView ? { opacity: 1, y: 0, filter: "blur(0px)" } : { opacity: 0, y: 12, filter: "blur(2px)" }}
-                transition={{
-                  duration: 0.6,
-                  ease: [0.16, 1, 0.3, 1],
-                  delay: 0.4 + index * 0.04,
-                }}
-                style={{
-                  display: "inline-block",
-                  whiteSpace: char === " " ? "pre" : "normal",
-                }}
-              >
-                {char}
-              </motion.span>
-            ))}
-          </div>
-          {/* Animated handwritten underline flourish */}
-          <svg
-            className="w-full text-zinc-900 dark:text-zinc-100"
-            style={{
-              height: "12px",
-              marginTop: "-2px",
-              overflow: "visible",
-              pointerEvents: "none",
-            }}
-            viewBox="0 0 100 10"
-            fill="none"
-          >
-            <motion.path
-              d="M 2,5 Q 50,2 98,6"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              initial={{ pathLength: 0 }}
-              animate={isInView ? { pathLength: 1 } : { pathLength: 0 }}
-              transition={{
-                duration: 0.9,
-                ease: "easeOut",
-                delay: 0.4 + ("Vansh Agrawal".length * 0.04),
-              }}
-            />
-          </svg>
-        </motion.div>
+        {/* Realistic handwriting signature */}
+        <Signature isInView={isInView} />
       </div>
     </footer>
   );
