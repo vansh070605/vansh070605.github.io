@@ -87,21 +87,11 @@ html.lenis {
   pointer-events: none;
 }
 
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font-sans);
-  line-height: 1.6;
-  overflow-x: clip;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  transition: background 0.4s var(--ease-smooth), color 0.4s var(--ease-smooth);
-  cursor: none;
-}
-
-/* Hide native cursor everywhere */
-*, a, a:hover, button, button:hover, input, textarea, [role="button"] {
-  cursor: none !important;
+/* Hide native cursor globally on all elements on desktop/mouse screens so the custom React cursor works */
+@media (pointer: fine) {
+  * {
+    cursor: none !important;
+  }
 }
 
 a { text-decoration: none; color: inherit; }
@@ -309,7 +299,7 @@ html.dark .glass {
 @media (max-width: 768px) {
   .hide-mobile { display: none !important; }
   body { cursor: auto; }
-  *, a, button, input, textarea, [role="button"] { cursor: auto !important; }
+  *, a, a *, button, button *, input, textarea, [role="button"], [role="button"] * { cursor: auto !important; }
 }
 
 /* ============================================

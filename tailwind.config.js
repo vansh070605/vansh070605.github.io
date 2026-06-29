@@ -7,6 +7,10 @@ export default {
   darkMode: 'class',
   theme: {
     extend: {
+      cursor: {
+        'custom': "url('/cursor-arrowhead-32.png') 0 0, default",
+        'custom-pointer': "url('/cursor-arrowhead-32.png') 0 0, pointer",
+      },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
         display: ['Instrument Serif', 'Playfair Display', 'Georgia', 'serif'],
