@@ -56,7 +56,7 @@ export default function Experience() {
   });
 
   // Smooth scroll translation with spring physics
-  const maxScroll = -(trackWidth - viewportWidth + 100);
+  const maxScroll = -(trackWidth - 0.7 * viewportWidth - 170);
   const x = useTransform(scrollYProgress, [0, 1], [0, maxScroll < 0 ? maxScroll : 0]);
   const smoothX = useSpring(x, { stiffness: 60, damping: 18, mass: 0.8 });
 
@@ -127,7 +127,7 @@ export default function Experience() {
   }, [bendX, bendY, trackWidth]);
 
   return (
-    <div id="experience" ref={containerRef} className={`relative bg-cream dark:bg-zinc-950 ${isMobile ? "py-16 h-auto" : "h-[400vh]"}`}>
+    <div id="experience" ref={containerRef} className={`relative ${isMobile ? "py-16 h-auto" : "h-[220vh]"}`} style={{ background: "var(--bg)" }}>
       {/* Sticky screen container */}
       <div className={`${isMobile ? "flex flex-col gap-12" : "sticky top-0 h-screen overflow-hidden flex flex-col justify-between py-16"}`}>
 

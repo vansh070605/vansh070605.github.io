@@ -105,7 +105,7 @@ export default function Skills() {
   const smoothTickerX = useSpring(tickerX, { stiffness: 70, damping: 22 });
 
   return (
-    <div id="skills" ref={containerRef} className={`relative bg-cream dark:bg-zinc-950 ${isMobile ? "py-16" : "h-[300vh]"}`}>
+    <div id="skills" ref={containerRef} className={`relative ${isMobile ? "py-16" : "h-[300vh]"}`} style={{ background: "var(--bg)" }}>
       {/* Sticky layout container */}
       <div className={`${isMobile ? "flex flex-col gap-12" : "sticky top-0 h-screen overflow-hidden flex flex-col justify-between py-16"}`}>
 

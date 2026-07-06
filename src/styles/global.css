@@ -6,7 +6,7 @@
    DESIGN TOKENS — LIGHT MODE FIRST
    ============================================ */
 :root {
-  --bg:            #F8F7F4;
+  --bg:            #fcfbf9;
   --bg-elevated:   #FFFFFF;
   --bg-surface:    #F0EEE9;
   --text:          #0D0D0D;
@@ -38,7 +38,7 @@
 
 /* DARK MODE */
 html.dark {
-  --bg:            #0C0C0E;
+  --bg:            #08080a;
   --bg-elevated:   #141416;
   --bg-surface:    #1C1C1F;
   --text:          #F2F0EB;

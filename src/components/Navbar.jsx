@@ -173,13 +173,12 @@ export default function Navbar({ isDark, toggleDark }) {
         {/* Centre — Nav links (desktop) */}
         <div className="hidden md:flex items-center gap-0.5 absolute left-1/2 -translate-x-1/2">
           {NAV_LINKS.map((link) => (
-            <Magnetic key={link.href} strength={0.28} radius={70}>
-              <NavLink
-                link={link}
-                active={activeLink === link.href}
-                onClick={() => handleNavClick(link.href)}
-              />
-            </Magnetic>
+            <NavLink
+              key={link.href}
+              link={link}
+              active={activeLink === link.href}
+              onClick={() => handleNavClick(link.href)}
+            />
           ))}
         </div>
 
@@ -229,51 +228,43 @@ export default function Navbar({ isDark, toggleDark }) {
           </button>
 
           {/* Resume button */}
-          <Magnetic strength={0.32} radius={70}>
-            <a
-              href="/Resume.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden md:flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold transition-all duration-200 hover:opacity-85"
-              style={{
-                background: "var(--text)",
-                color: "var(--bg)",
-                fontSize: "0.82rem",
-                letterSpacing: "0.02em",
-              }}
-              id="resume-btn"
-            >
-              Résumé ↗
-            </a>
-          </Magnetic>
+          <a
+            href="/Resume.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden md:flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold transition-all duration-200 hover:opacity-85"
+            style={{
+              background: "var(--text)",
+              color: "var(--bg)",
+              fontSize: "0.82rem",
+              letterSpacing: "0.02em",
+            }}
+            id="resume-btn"
+          >
+            Résumé ↗
+          </a>
 
           {/* Mobile menu button */}
           <button
-            className="flex md:hidden flex-col items-center justify-center w-8 h-8 gap-1"
+            className="flex md:hidden flex-col items-end justify-center w-8 h-8 relative z-50"
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label="Toggle menu"
             id="mobile-menu-btn"
           >
             <span
-              className="block w-5 h-[1.5px] transition-all duration-300 origin-center"
+              className="block h-[1.5px] transition-all duration-350 absolute left-1.5"
               style={{
                 background: "var(--text)",
-                transform: menuOpen ? "rotate(45deg) translateY(3.75px)" : "rotate(0)",
+                width: "20px",
+                transform: menuOpen ? "rotate(45deg)" : "translateY(-4.5px)",
               }}
             />
             <span
-              className="block h-[1.5px] transition-all duration-300"
+              className="block h-[1.5px] transition-all duration-350 absolute left-1.5"
               style={{
                 background: "var(--text)",
-                width: menuOpen ? "0" : "1.25rem",
-                opacity: menuOpen ? 0 : 1,
-              }}
-            />
-            <span
-              className="block w-5 h-[1.5px] transition-all duration-300 origin-center"
-              style={{
-                background: "var(--text)",
-                transform: menuOpen ? "rotate(-45deg) translateY(-3.75px)" : "rotate(0)",
+                width: menuOpen ? "20px" : "14px",
+                transform: menuOpen ? "rotate(-45deg)" : "translateY(4.5px)",
               }}
             />
           </button>

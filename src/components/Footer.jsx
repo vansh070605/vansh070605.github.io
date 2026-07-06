@@ -164,11 +164,12 @@ export default function Footer() {
   return (
     <footer
       ref={ref}
-      className="relative w-full overflow-hidden transition-colors duration-500 bg-[#fcfbf9] dark:bg-[#08080a] border-t border-zinc-200/80 dark:border-zinc-800/60"
+      className="relative w-full overflow-hidden transition-colors duration-500"
       style={{
         minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
+        background: "var(--bg)",
       }}
       id="footer-poster"
     >

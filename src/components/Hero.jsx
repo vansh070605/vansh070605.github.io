@@ -4,27 +4,91 @@ import { motion } from "framer-motion";
 import { MaskReveal, FadeReveal } from "./ui/TextReveal";
 import Magnetic from "./ui/Magnetic";
 
-/* ── Three.js rotating wireframe orb ───────────────────────────── */
-function FloatingOrb() {
-  const meshRef = useRef();
+/* ── Three.js Interactive Minimalist Globe ───────────────────────── */
+function MinimalGlobe() {
+  const globeRef = useRef();
   const t = useRef(0);
 
-  useFrame((_, delta) => {
-    t.current += delta * 0.28;
-    if (!meshRef.current) return;
-    meshRef.current.rotation.x += delta * 0.07;
-    meshRef.current.rotation.y += delta * 0.11;
-    meshRef.current.position.y = Math.sin(t.current) * 0.35;
+  // Interactive states via refs for performance
+  const isDragging = useRef(false);
+  const dragRotation = useRef({ x: 0, y: 0 });
+  const startPointer = useRef({ x: 0, y: 0 });
+  const isHovered = useRef(false);
+  const currentScale = useRef(1.0);
+
+  useFrame((state, delta) => {
+    t.current += delta;
+    if (!globeRef.current) return;
+
+    // Hover scale and opacity transitions
+    const targetScale = isHovered.current ? 1.15 : 1.0;
+    currentScale.current += (targetScale - currentScale.current) * 0.1;
+    globeRef.current.scale.set(currentScale.current, currentScale.current, currentScale.current);
+
+    if (globeRef.current.material) {
+      const targetOpacity = isHovered.current ? 0.38 : 0.22;
+      globeRef.current.material.opacity += (targetOpacity - globeRef.current.material.opacity) * 0.1;
+    }
+
+    if (!isDragging.current) {
+      // Auto rotation
+      globeRef.current.rotation.y += delta * 0.05;
+      globeRef.current.rotation.x += delta * 0.02;
+
+      // Mouse tilt interaction (only active when not dragging)
+      const targetX = state.pointer.y * 0.25;
+      const targetY = state.pointer.x * 0.25;
+      globeRef.current.rotation.x += (targetX - globeRef.current.rotation.x) * 0.05;
+      globeRef.current.rotation.y += (targetY - globeRef.current.rotation.y) * 0.05;
+    } else {
+      // Drag rotation lerp
+      globeRef.current.rotation.x += (dragRotation.current.x - globeRef.current.rotation.x) * 0.15;
+      globeRef.current.rotation.y += (dragRotation.current.y - globeRef.current.rotation.y) * 0.15;
+    }
+
+    // Subtle vertical floating
+    globeRef.current.position.y = Math.sin(t.current * 0.6) * 0.08;
   });
 
   return (
-    <mesh ref={meshRef}>
-      <icosahedronGeometry args={[1.6, 3]} />
-      <meshStandardMaterial
+    <mesh
+      ref={globeRef}
+      position={[0.35, 0, 0]}
+      onPointerDown={(e) => {
+        e.stopPropagation();
+        isDragging.current = true;
+        startPointer.current = { x: e.clientX, y: e.clientY };
+        dragRotation.current = { x: globeRef.current.rotation.x, y: globeRef.current.rotation.y };
+      }}
+      onPointerUp={() => {
+        isDragging.current = false;
+      }}
+      onPointerLeave={() => {
+        isDragging.current = false;
+        isHovered.current = false;
+      }}
+      onPointerOver={(e) => {
+        e.stopPropagation();
+        isHovered.current = true;
+      }}
+      onPointerMove={(e) => {
+        if (!isDragging.current) return;
+        e.stopPropagation();
+        const deltaX = e.clientY - startPointer.current.y;
+        const deltaY = e.clientX - startPointer.current.x;
+
+        dragRotation.current.x += deltaX * 0.006;
+        dragRotation.current.y += deltaY * 0.006;
+
+        startPointer.current = { x: e.clientX, y: e.clientY };
+      }}
+    >
+      <icosahedronGeometry args={[1.25, 2]} />
+      <meshBasicMaterial
         color="#818CF8"
         wireframe
-        opacity={0.18}
         transparent
+        opacity={0.22}
       />
     </mesh>
   );
@@ -44,25 +108,25 @@ export default function Hero() {
         style={{ opacity: 0.32 }}
       />
 
-      {/* Three.js orb — right side */}
+      {/* Three.js Interactive Globe — right side */}
       <div
-        className="absolute right-0 top-0 bottom-0 pointer-events-none w-full md:w-[52%] opacity-[0.25] md:opacity-55 z-0"
+        className="absolute right-0 top-0 bottom-0 pointer-events-none w-full md:w-[68vw] opacity-[0.4] md:opacity-70 z-0"
       >
         <Canvas
           camera={{ position: [0, 0, 4], fov: 45 }}
           gl={{ antialias: true, alpha: true }}
-          style={{ width: "100%", height: "100%" }}
+          style={{ width: "100%", height: "100%", pointerEvents: "auto" }}
         >
           <ambientLight intensity={0.6} />
           <directionalLight position={[2, 4, 2]} intensity={0.8} />
           <pointLight position={[-2, -2, 2]} intensity={0.4} color="#E11D48" />
-          <FloatingOrb />
+          <MinimalGlobe />
         </Canvas>
       </div>
 
       {/* ── Content ─────────────────────────────────────────────── */}
-      <div className="section-container relative z-10 w-full">
-        <div style={{ maxWidth: "820px" }}>
+      <div className="section-container relative z-10 w-full pointer-events-none">
+        <div style={{ maxWidth: "820px" }} className="pointer-events-auto">
 
           {/* Label — mask reveal */}
           <MaskReveal delay={0.05} duration={0.7} animateOnMount={true}>
@@ -170,37 +234,33 @@ export default function Hero() {
             </p>
           </FadeReveal>
 
-          {/* CTA Buttons — wrapped in Magnetic */}
+          {/* CTA Buttons */}
           <FadeReveal delay={0.65} animateOnMount={true}>
             <div className="flex flex-wrap gap-3">
-              <Magnetic strength={0.3} radius={80}>
-                <a
-                  href="#projects"
-                  className="btn-primary"
-                  id="hero-view-work"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    document.querySelector("#projects")?.scrollIntoView({ behavior: "smooth" });
-                  }}
-                >
-                  View my work
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="6 9 12 15 18 9" />
-                  </svg>
-                </a>
-              </Magnetic>
+              <a
+                href="#projects"
+                className="btn-primary"
+                id="hero-view-work"
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.querySelector("#projects")?.scrollIntoView({ behavior: "smooth" });
+                }}
+              >
+                View my work
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </a>
 
-              <Magnetic strength={0.3} radius={80}>
-                <a
-                  href="/Resume.pdf"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-outline"
-                  id="hero-resume"
-                >
-                  Download CV ↗
-                </a>
-              </Magnetic>
+              <a
+                href="/Resume.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-outline"
+                id="hero-resume"
+              >
+                Download CV ↗
+              </a>
             </div>
           </FadeReveal>
 
@@ -214,18 +274,17 @@ export default function Hero() {
                   { label: "LinkedIn", url: "https://linkedin.com/in/thevanshagrawal" },
                   { label: "X", url: "https://x.com/vansh070605" },
                 ].map((s) => (
-                  <Magnetic key={s.label} strength={0.25} radius={60}>
-                    <a
-                      href={s.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="label-text transition-all duration-200 hover:opacity-100"
-                      style={{ fontSize: "0.72rem", opacity: 0.55 }}
-                      id={`hero-social-${s.label.toLowerCase()}`}
-                    >
-                      {s.label}
-                    </a>
-                  </Magnetic>
+                  <a
+                    key={s.label}
+                    href={s.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="label-text opacity-55 hover:opacity-100 hover:text-indigo-500 dark:hover:text-indigo-400 transition-all duration-200"
+                    style={{ fontSize: "0.72rem" }}
+                    id={`hero-social-${s.label.toLowerCase()}`}
+                  >
+                    {s.label}
+                  </a>
                 ))}
               </div>
             </div>

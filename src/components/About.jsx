@@ -63,6 +63,10 @@ export default function About() {
   const { scrollYProgress } = useScroll({ target: photoRef, offset: ["start end", "end start"] });
   const photoY = useTransform(scrollYProgress, [0, 1], [60, -60]);
 
+  const { scrollYProgress: sectionScrollY } = useScroll({ target: sectionRef, offset: ["start end", "end start"] });
+  const rightColY = useTransform(sectionScrollY, [0, 1], [35, -35]);
+  const rightColSpringY = useSpring(rightColY, { stiffness: 100, damping: 22 });
+
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
   const smx = useSpring(mx, { stiffness: 60, damping: 18 });
@@ -162,7 +166,7 @@ export default function About() {
           </motion.div>
 
           {/* ── Right column ── */}
-          <div className="flex flex-col gap-4">
+          <motion.div className="flex flex-col gap-4" style={{ y: rightColSpringY }}>
 
             {/* Bio card */}
             <motion.div
@@ -238,7 +242,7 @@ export default function About() {
               </motion.div>
             </div>
 
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

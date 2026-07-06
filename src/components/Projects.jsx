@@ -123,7 +123,7 @@ export default function Projects() {
     target: containerRef,
   });
 
-  const maxScroll = -(trackWidth - viewportWidth + 100);
+  const maxScroll = -(trackWidth - 0.7 * viewportWidth - 190);
   const x = useTransform(scrollYProgress, [0, 1], [0, maxScroll < 0 ? maxScroll : 0]);
   const smoothX = useSpring(x, { stiffness: 60, damping: 18, mass: 0.8 });
 
@@ -140,7 +140,7 @@ export default function Projects() {
   }, [scrollYProgress]);
 
   return (
-    <div id="projects" ref={containerRef} className={`relative bg-cream dark:bg-zinc-950 ${isMobile ? "py-16" : "h-[350vh]"}`}>
+    <div id="projects" ref={containerRef} className={`relative ${isMobile ? "py-16" : "h-[350vh]"}`} style={{ background: "var(--bg)" }}>
       {/* Sticky layout container (only sticky on desktop) */}
       <div className={`${isMobile ? "flex flex-col gap-16" : "sticky top-0 h-screen overflow-hidden flex flex-col justify-between py-16"}`}>
 
