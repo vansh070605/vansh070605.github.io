@@ -1,110 +1,92 @@
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { m, useReducedMotion } from "framer-motion";
+import { useLenis } from "lenis/react";
+import { swarm } from "../swarm";
 
-const PHRASES = ["VANSH AGRAWAL", "AIML ENGINEER", "FULL STACK DEV"];
+const EASE = [0.76, 0, 0.24, 1];
+const MIN_MS = 1600;  // never just flash
+const MAX_MS = 6000;  // never get stuck, whatever fails to load
 
-export default function Preloader({ onComplete }) {
-  const [progress, setProgress] = useState(0);
-  const [phase, setPhase]       = useState("counting"); // counting | done | exit
+/* Opening screen in the site's detection style: a box opens, a scan line
+   sweeps through it and a counter runs to 100 while the fonts and the 3D
+   portrait load. Then the box expands and the screen wipes up. */
+export default function Preloader({ onDone }) {
+  const reduce = useReducedMotion();
+  const lenis = useLenis();
+  const [pct, setPct] = useState(0);
+  const [leaving, setLeaving] = useState(false);
+  const fontsReady = useRef(false);
+  const finished = useRef(false);
+
+  // No scrolling underneath while it is up
+  useEffect(() => {
+    lenis?.stop();
+    document.documentElement.style.overflow = "hidden";
+    return () => { lenis?.start(); document.documentElement.style.overflow = ""; };
+  }, [lenis]);
 
   useEffect(() => {
-    let val = 0;
+    document.fonts?.ready.then(() => { fontsReady.current = true; });
+    const start = performance.now();
+    let value = 0, raf;
     const tick = () => {
-      const step = Math.random() * 14 + 3;
-      val = Math.min(val + step, 100);
-      setProgress(Math.floor(val));
-      if (val < 100) {
-        setTimeout(tick, Math.random() * 90 + 30);
-      } else {
-        setPhase("done");
-        setTimeout(() => {
-          setPhase("exit");
-          setTimeout(onComplete, 900);
-        }, 700);
-      }
+      const elapsed = performance.now() - start;
+      const ready = (fontsReady.current && swarm.loaded) || elapsed > MAX_MS;
+      // Ease toward 90 while loading, then run to 100 once everything is in
+      const cap = ready ? 100 : 90;
+      value += (cap - value) * (ready ? 0.12 : 0.035);
+      const shown = Math.min(100, Math.round(value));
+      setPct(shown);
+      if (ready && shown >= 100 && elapsed > (reduce ? 300 : MIN_MS)) { setLeaving(true); return; }
+      raf = requestAnimationFrame(tick);
     };
-    const t = setTimeout(tick, 300);
-    return () => clearTimeout(t);
-  }, [onComplete]);
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [reduce]);
 
-  const paddedProgress = String(progress).padStart(2, "0");
+  const done = () => {
+    if (finished.current) return;
+    finished.current = true;
+    onDone();
+  };
+
+  // Belt and braces: if the exit animation never reports back, finish anyway
+  useEffect(() => {
+    if (!leaving) return;
+    const id = setTimeout(done, 1600);
+    return () => clearTimeout(id);
+  }, [leaving]);
+
+  const score = (pct / 100 * 0.99).toFixed(2);
 
   return (
-    <motion.div
-      key="preloader"
-      className="fixed inset-0 z-[99999] flex flex-col items-center justify-center overflow-hidden"
-      style={{ background: "var(--bg)" }}
-      initial={{ opacity: 1 }}
-      exit={{ y: "-100%" }}
-      transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
+    <m.div
+      className="loader"
+      role="status"
+      aria-label={`Loading, ${pct}%`}
+      initial={{ clipPath: "inset(0% 0% 0% 0%)" }}
+      animate={leaving ? { clipPath: "inset(0% 0% 100% 0%)" } : { clipPath: "inset(0% 0% 0% 0%)" }}
+      transition={{ duration: reduce ? 0.2 : 1, ease: EASE, delay: leaving && !reduce ? 0.35 : 0 }}
+      onAnimationComplete={() => leaving && done()}
     >
-      {/* Dot grid background */}
-      <div
-        className="absolute inset-0 bg-dot-pattern pointer-events-none"
-        style={{ opacity: 0.4 }}
-      />
-
-      {/* Main counter */}
-      <div className="relative z-10 text-center select-none">
-        <motion.div
-          className="font-display"
-          style={{
-            fontSize: "clamp(6rem, 20vw, 16rem)",
-            lineHeight: 1,
-            color: "var(--text)",
-            letterSpacing: "-0.04em",
-            fontStyle: "italic",
-          }}
-          key={progress}
-          initial={{ opacity: 0.6 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.05 }}
-        >
-          {paddedProgress}
-        </motion.div>
-
-        {/* Label */}
-        <motion.p
-          className="label-text mt-6 tracking-widest"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.6 }}
-        >
-          {phase === "done" ? "Ready" : "Loading portfolio"}
-        </motion.p>
-      </div>
-
-      {/* Name reveal strip */}
-      <motion.div
-        className="absolute bottom-24 left-0 right-0 flex justify-center overflow-hidden"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.4, duration: 0.6 }}
+      <m.div
+        className="loader-box det"
+        initial={reduce ? false : { scale: 0.4, opacity: 0 }}
+        animate={leaving ? { scale: 1.6, opacity: 0 } : { scale: 1, opacity: 1 }}
+        transition={{ duration: leaving ? 0.7 : 0.9, ease: [0.16, 1, 0.3, 1] }}
       >
-        <p
-          className="label-text text-center"
-          style={{ letterSpacing: "0.25em", fontSize: "0.7rem" }}
-        >
-          {PHRASES[0]}
-        </p>
-      </motion.div>
-
-      {/* Progress bar */}
-      <div
-        className="absolute bottom-0 left-0 right-0 h-[2px]"
-        style={{ background: "var(--border)" }}
+        <span className="det-label">person {score}</span>
+        {!reduce && <span className="loader-scan" aria-hidden="true" />}
+        <span className="loader-num">{String(pct).padStart(2, "0")}<small>%</small></span>
+      </m.div>
+      <m.p
+        className="loader-name"
+        initial={reduce ? false : { opacity: 0, y: 12 }}
+        animate={leaving ? { opacity: 0, y: -12 } : { opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: leaving ? 0 : 0.3 }}
       >
-        <motion.div
-          className="h-full"
-          style={{
-            background: "linear-gradient(90deg, var(--accent), var(--accent-rose))",
-            originX: 0,
-          }}
-          initial={{ scaleX: 0 }}
-          animate={{ scaleX: progress / 100 }}
-          transition={{ ease: "linear", duration: 0.15 }}
-        />
-      </div>
-    </motion.div>
+        Vansh Agrawal
+      </m.p>
+    </m.div>
   );
 }

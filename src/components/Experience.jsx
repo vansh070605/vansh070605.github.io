@@ -1,357 +1,186 @@
-import { useRef, useState, useEffect, useCallback } from "react";
-import { motion, useScroll, useTransform, useSpring, useMotionValue } from "framer-motion";
-import { MaskReveal, TextReveal } from "./ui/TextReveal";
+import { useEffect, useRef, useState } from "react";
+import { m, useMotionValueEvent, useScroll, useTransform } from "framer-motion";
+import { useLenis } from "lenis/react";
+import { experience, education } from "../data/content";
+import { swarm } from "../swarm";
 
-const experiences = [
-  { id: 0, role: "High School", company: "A.P.J School NOIDA", date: "2020 – 2021", desc: "Completed High School with Mathematics and Science. Score: 85.2%.", tags: ["Mathematics", "Science"], color: "#6B8F71" },
-  { id: 1, role: "Senior Secondary", company: "A.P.J School NOIDA", date: "2022 – 2023", desc: "Completed Senior Secondary with PCM curriculum. Score: 68.4%.", tags: ["Physics", "Chemistry", "Mathematics"], color: "#D97706" },
-  { id: 2, role: "B.Tech CSE (AI/ML)", company: "SRM IST", date: "Jul 2023 – Present", desc: "Bachelor's in CS specialising in AI & ML. Current CGPA: 7.86/10.", tags: ["Algorithms", "Data Structures", "AI", "ML"], color: "#4F46E5" },
-  { id: 3, role: "Technical Team Member", company: "LiftOff", date: "Mar – Aug 2024", desc: "Strengthened front-end proficiency and built diverse website clones. Implemented CRUD operations.", tags: ["HTML5", "CSS3", "JavaScript"], color: "#0EA5E9" },
-  { id: 4, role: "Internship Trainee", company: "Digital Info Solutions Pvt. Ltd.", date: "Dec 2024", desc: "Built full-stack applications with Flask & SQLite. Developed auth modules and RESTful APIs.", tags: ["Flask", "SQL", "RESTful API"], color: "#6B8F71" },
-  { id: 5, role: "Internship", company: "RCOTBA Industries", date: "Jan – Jun 2025", desc: "Led technical initiatives, optimised production code, collaborated cross-functionally.", tags: ["React", "Node.js", "System Arch"], color: "#4F46E5" },
-  { id: 6, role: "Event Coordinator", company: "SRMIST ACM SIGAI", date: "Mar – Oct 2025", desc: "Orchestrated AI symposiums, managed logistics and marketing for campus events.", tags: ["Leadership", "Management", "Speaking"], color: "#E11D48" },
-  { id: 7, role: "AI/ML Intern", company: "Tata Steel", date: "Nov 2025 – Present", desc: "Engineered a Computer Vision pipeline for automated TMT rebar QC with 95% precision.", tags: ["Computer Vision", "OpenCV", "ML"], color: "#D97706" },
-];
+const COLORS = ["#D4145A", "#2F4BD8", "#0E7C6B", "#7C3AED", "#C2410C", "#3F7D20"];
+const MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+const pad = (n) => String(n).padStart(2, "0");
+const clamp01 = (x) => Math.min(1, Math.max(0, x));
+const smooth = (x) => x * x * (3 - 2 * x);
 
-function getTagEmoji(tag) {
-  const t = tag.toLowerCase();
-  if (t.includes("math")) return "🧮";
-  if (t.includes("phys")) return "⚛️";
-  if (t.includes("algorithm")) return "🧬";
-  if (t.includes("html") || t.includes("javascript")) return "🌐";
-  if (t.includes("flask") || t.includes("sql")) return "🔌";
-  if (t.includes("react") || t.includes("node")) return "🚀";
-  if (t.includes("leader") || t.includes("speak")) return "📢";
-  if (t.includes("vision") || t.includes("opencv")) return "👁️";
-  return "💼";
-}
+// Sort key from the start of a date like "Mar – Aug 2024" or "2023 – now"
+const startOf = (date) => {
+  const year = Number(date.match(/\d{4}/)?.[0] ?? 0);
+  const month = MONTHS.indexOf(date.slice(0, 3).toLowerCase());
+  return year * 12 + Math.max(0, month);
+};
 
-export default function Experience() {
-  const containerRef = useRef(null);
-  const trackRef = useRef(null);
-  const svgRef = useRef(null);
+// Work and schooling together, oldest first
+const ENTRIES = [
+  ...experience.map((x) => ({ ...x, type: "Work" })),
+  ...education.map((x) => ({
+    ...x, type: "Education", tags: null,
+    desc: `${x.label} ${x.score}${x.max === 100 ? "%" : ` / ${x.max}`}`,
+  })),
+]
+  .sort((a, b) => startOf(a.date) - startOf(b.date))
+  .map((x, i) => ({ ...x, color: COLORS[i % COLORS.length], year: x.date.match(/\d{4}/)?.[0] ?? "" }));
+const N = ENTRIES.length;
 
-  const [activeYear, setActiveYear] = useState("2020");
-  const [trackWidth, setTrackWidth] = useState(0);
-  const [viewportWidth, setViewportWidth] = useState(() => typeof window !== "undefined" ? window.innerWidth : 0);
+/* Everything below is scrubbed: driven by `t`, a motion value that runs
+   0 → N-1 as you scroll, so it moves exactly as fast as your hand. */
 
-  // Monitor screen resizing to compute scrollable bounds
-  useEffect(() => {
-    const handleResize = () => {
-      if (trackRef.current) {
-        setTrackWidth(trackRef.current.scrollWidth);
-      }
-      setViewportWidth(window.innerWidth);
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  const isMobile = viewportWidth > 0 && viewportWidth < 768;
-
-  // useScroll on container with 400vh tall height for a spacious timeline scroll
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
+// One digit column of the year: a strip of digits that rolls like an odometer.
+// Columns 3 and 4 spin a full turn on every chapter change, slot-machine style.
+const SPIN = [0, 0, 1, 1];
+const STRIP = 10 * (N + 2);
+function DigitColumn({ k, t }) {
+  const base = ENTRIES.map((e, i) => Number(e.year[k]) + 10 * i * SPIN[k]);
+  const y = useTransform(t, (v) => {
+    const i = Math.min(N - 2, Math.floor(v));
+    const e = smooth(clamp01((v - i - 0.3) / 0.45));
+    const pos = base[i] + (base[i + 1] - base[i]) * e;
+    return `${-pos}em`;
   });
-
-  // Smooth scroll translation with spring physics
-  const maxScroll = -(trackWidth - 0.7 * viewportWidth - 170);
-  const x = useTransform(scrollYProgress, [0, 1], [0, maxScroll < 0 ? maxScroll : 0]);
-  const smoothX = useSpring(x, { stiffness: 60, damping: 18, mass: 0.8 });
-
-  // Update active year indicator based on scroll progress
-  useEffect(() => {
-    const unsubscribe = scrollYProgress.on("change", (v) => {
-      const idx = Math.min(
-        Math.floor(v * experiences.length),
-        experiences.length - 1
-      );
-      const rawDate = experiences[idx].date;
-      const match = rawDate.match(/\d{4}/);
-      if (match) {
-        setActiveYear(match[0]);
-      }
-    });
-    return () => unsubscribe();
-  }, [scrollYProgress]);
-
-  // ── Elastic Timeline SVG String logic ──
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(150);
-
-  const bendX = useSpring(mouseX, { stiffness: 300, damping: 30 });
-  const bendY = useSpring(mouseY, { stiffness: 100, damping: 8, mass: 0.6 }); // bouncy plucking physics!
-
-  const handleMouseMove = useCallback((e) => {
-    if (isMobile || !svgRef.current) return;
-    const rect = svgRef.current.getBoundingClientRect();
-    const localX = e.clientX - rect.left;
-    const localY = e.clientY - rect.top;
-
-    // Pluck the string if mouse is within 100px vertically
-    if (Math.abs(localY - 150) < 100) {
-      mouseX.set(localX);
-      mouseY.set(localY);
-    } else {
-      mouseY.set(150);
-    }
-  }, [mouseX, mouseY, isMobile]);
-
-  const handleMouseLeave = useCallback(() => {
-    if (isMobile) return;
-    mouseY.set(150);
-  }, [mouseY, isMobile]);
-
-  // Generate SVG path coordinate strings using Motion Values
-  const [svgPath, setSvgPath] = useState("M 0 150 L 3000 150");
-
-  useEffect(() => {
-    const unsubscribeX = bendX.on("change", () => updatePath());
-    const unsubscribeY = bendY.on("change", () => updatePath());
-
-    function updatePath() {
-      const w = trackWidth > 0 ? trackWidth : 3500;
-      const bx = bendX.get();
-      const by = bendY.get();
-
-      // Control coordinates for quadratic bezier bend
-      setSvgPath(`M 0 150 Q ${bx} ${by} ${w} 150`);
-    }
-
-    updatePath();
-    return () => {
-      unsubscribeX();
-      unsubscribeY();
-    };
-  }, [bendX, bendY, trackWidth]);
-
   return (
-    <div id="experience" ref={containerRef} className={`relative ${isMobile ? "py-16 h-auto" : "h-[220vh]"}`} style={{ background: "var(--bg)" }}>
-      {/* Sticky screen container */}
-      <div className={`${isMobile ? "flex flex-col gap-12" : "sticky top-0 h-screen overflow-hidden flex flex-col justify-between py-16"}`}>
-
-        {/* Header container */}
-        <div className="section-container w-full">
-          <MaskReveal delay={0} duration={0.7}>
-            <p className="label-text mb-2 text-indigo">Interactive Timeline</p>
-          </MaskReveal>
-          <TextReveal
-            as="h2"
-            className="display-text text-zinc-900 dark:text-white"
-            style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)" }}
-            delay={0.06}
-            stagger={0.06}
-            duration={0.9}
-          >
-            How I got here.
-          </TextReveal>
-        </div>
-
-        {/* Dynamic morphing background year */}
-        {!isMobile && (
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden z-0 opacity-10 dark:opacity-[0.04]">
-            <motion.div
-              key={activeYear}
-              initial={{ opacity: 0, scale: 0.8, filter: "blur(20px)" }}
-              animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-              exit={{ opacity: 0, scale: 1.2, filter: "blur(20px)" }}
-              transition={{ duration: 0.9, ease: [0.33, 1, 0.68, 1] }}
-              className="font-display italic text-[24vw] leading-none text-zinc-900 dark:text-white"
-            >
-              {activeYear}
-            </motion.div>
-          </div>
-        )}
-
-        {/* Horizontal scroll track & elastic string container */}
-        <div className="relative flex-grow flex items-center z-10 w-full">
-
-          <motion.div
-            ref={trackRef}
-            style={isMobile ? {} : { x: smoothX }}
-            className={`flex w-full ${isMobile ? "flex-col items-center gap-10 px-6" : "items-center gap-16 px-[20vw] relative h-[450px]"}`}
-          >
-
-            {/* ── Dynamic Elastic Timeline String ── */}
-            {!isMobile && (
-              <div
-                className="absolute inset-x-0 h-[300px] top-[75px]"
-                onMouseMove={handleMouseMove}
-                onMouseLeave={handleMouseLeave}
-              >
-                <svg
-                  ref={svgRef}
-                  style={{ width: trackWidth || "3500px", height: "300px" }}
-                  className="absolute inset-0 pointer-events-none overflow-visible"
-                >
-                  {/* Background shadow line */}
-                  <path
-                    d={svgPath}
-                    fill="transparent"
-                    stroke="rgba(0, 0, 0, 0.04)"
-                    strokeWidth="6"
-                  />
-                  {/* Interactive main elastic string */}
-                  <path
-                    d={svgPath}
-                    fill="transparent"
-                    stroke="url(#line-gradient)"
-                    strokeWidth="2"
-                    className="transition-colors duration-300"
-                  />
-
-                  {/* Decorative gradients */}
-                  <defs>
-                    <linearGradient id="line-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#4F46E5" />
-                      <stop offset="35%" stopColor="#E11D48" />
-                      <stop offset="70%" stopColor="#D97706" />
-                      <stop offset="100%" stopColor="#6B8F71" />
-                    </linearGradient>
-                  </defs>
-
-                  {/* Milestone nodes directly bound to elastic string path */}
-                  {experiences.map((exp, idx) => {
-                    const nodeX = 200 + idx * 406; // matching spacing
-                    return (
-                      <circle
-                        key={exp.id}
-                        cx={nodeX}
-                        cy="150"
-                        r="6"
-                        fill={exp.color}
-                        style={{
-                          filter: `drop-shadow(0 0 8px ${exp.color}88)`
-                        }}
-                      />
-                    );
-                  })}
-                </svg>
-              </div>
-            )}
-
-            {/* Experiences timeline cards */}
-            {experiences.map((exp, idx) => (
-              <TimelineCard key={exp.id} exp={exp} index={idx} isMobile={isMobile} />
-            ))}
-
-          </motion.div>
-        </div>
-
-        {/* Navigation tips */}
-        {!isMobile && (
-          <div className="section-container w-full flex items-center justify-between z-10 text-xs font-semibold text-zinc-400 dark:text-zinc-500 tracking-wider">
-            <p>◀ SCROLL TO NAVIGATE ▶</p>
-            <p>HOVER &amp; DRAG MOUSE TO PLUCK TIMELINE STRING ⚡</p>
-          </div>
-        )}
-
-      </div>
-    </div>
+    <span className="odo-col">
+      <m.span className="odo-strip" style={{ y }}>
+        {Array.from({ length: STRIP }, (_, n) => <span key={n}>{n % 10}</span>)}
+      </m.span>
+    </span>
   );
 }
 
-function TimelineCard({ exp, index, isMobile }) {
-  const cardRef = useRef(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const rotateX = useSpring(x, { stiffness: 100, damping: 20 });
-  const rotateY = useSpring(y, { stiffness: 100, damping: 20 });
+// A letter of a role title: rises in with the chapter, lifts out as it leaves
+function Letter({ ch, i, j, t }) {
+  const y = useTransform(t, (v) => {
+    const local = v - i;
+    const inn = clamp01((local + 0.6 - j * 0.012) / 0.3);
+    const out = clamp01((local - 0.35 - j * 0.008) / 0.3);
+    return `${(1 - smooth(inn)) * 110 - smooth(out) * 110}%`;
+  });
+  return <m.span className="ch-letter" style={{ y }}>{ch}</m.span>;
+}
 
-  const handleMouseMove = (e) => {
-    if (isMobile || !cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const w = rect.width;
-    const h = rect.height;
-    const mx = e.clientX - rect.left - w / 2;
-    const my = e.clientY - rect.top - h / 2;
+// A supporting line (company, text, tags) that slides and fades with the chapter
+function Line({ i, t, delay, className, children, as = "p" }) {
+  const C = m[as];
+  const style = {
+    opacity: useTransform(t, (v) => {
+      const local = v - i;
+      return smooth(clamp01((local + 0.45 - delay) / 0.25)) * (1 - smooth(clamp01((local - 0.3) / 0.2)));
+    }),
+    y: useTransform(t, (v) => {
+      const local = v - i;
+      return (1 - smooth(clamp01((local + 0.45 - delay) / 0.25))) * 40 - smooth(clamp01((local - 0.3) / 0.2)) * 30;
+    }),
+  };
+  return <C className={className} style={style}>{children}</C>;
+}
 
-    // Tilt calculations
-    x.set(-my / 10);
-    y.set(mx / 10);
+function Chapter({ x, i, t }) {
+  return (
+    <article className="ch-entry">
+      <Line i={i} t={t} delay={0} className="ch-kicker">
+        <span className="ch-type">{x.type}</span>
+        <span>{pad(i + 1)} / {pad(N)}</span>
+      </Line>
+      <h3 className="ch-role" aria-label={x.role}>
+        {/* Letters grouped per word so lines only break between words */}
+        {x.role.split(" ").map((word, w, words) => {
+          const start = words.slice(0, w).join(" ").length + (w ? 1 : 0);
+          return (
+            <span key={w} className="ch-word" aria-hidden="true">
+              {[...word].map((ch, k) => (
+                <span key={k} className="ch-mask"><Letter ch={ch} i={i} j={start + k} t={t} /></span>
+              ))}
+            </span>
+          );
+        })}
+      </h3>
+      <Line i={i} t={t} delay={0.06} className="ch-org">{x.org}<span className="ch-date">{x.date}</span></Line>
+      <Line i={i} t={t} delay={0.1} className="ch-desc">{x.desc}</Line>
+      {x.tags && (
+        <Line i={i} t={t} delay={0.14} as="ul" className="ch-tags">
+          {x.tags.map((tag) => <li key={tag}>{tag}</li>)}
+        </Line>
+      )}
+    </article>
+  );
+}
+
+export default function Experience() {
+  const ref = useRef(null);
+  const lenis = useLenis();
+  const [active, setActive] = useState(0);
+
+  // Pinned progress through the chapters, and a separate one for the intro wipe
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
+
+  const t = useTransform(scrollYProgress, (v) => clamp01(v) * (N - 1));
+  const bar = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  // Accent colour blends from one chapter's colour to the next as you scroll
+  const color = useTransform(t, ENTRIES.map((_, i) => i), ENTRIES.map((e) => e.color));
+
+  useMotionValueEvent(t, "change", (v) => {
+    swarm.xp = v / (N - 1);
+    const i = Math.round(v);
+    setActive((a) => (a === i ? a : i));
+  });
+  useEffect(() => { swarm.tint = ENTRIES[active].color; }, [active]);
+
+  const go = (i) => {
+    const el = ref.current;
+    const top = el.getBoundingClientRect().top + window.scrollY;
+    const y = top + (i / (N - 1)) * (el.offsetHeight - window.innerHeight);
+    lenis ? lenis.scrollTo(y, { duration: 1.6 }) : window.scrollTo({ top: y, behavior: "smooth" });
   };
 
-  const handleMouseLeave = () => {
-    if (isMobile) return;
-    x.set(0);
-    y.set(0);
-  };
-
-  const isEven = index % 2 === 0;
+  const x = ENTRIES[active];
 
   return (
-    <motion.div
-      ref={cardRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      initial={isMobile ? { opacity: 0, y: 50 } : { opacity: 0, scale: 0.95 }}
-      whileInView={isMobile ? { opacity: 1, y: 0 } : { opacity: 1, scale: 1 }}
-      viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: isMobile ? 0 : index * 0.05 }}
-      style={isMobile ? {} : {
-        rotateX,
-        rotateY,
-        transformStyle: "preserve-3d",
-        y: isEven ? -110 : 110,
-      }}
-      className={`relative p-7 rounded-[2rem] bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-md transition-shadow duration-300 w-full max-w-[340px] flex-shrink-0 z-20 flex flex-col justify-between ${isMobile ? "h-auto" : "h-[320px] hover:shadow-2xl cursor-none"}`}
-    >
+    <section id="experience" ref={ref} className="ch" style={{ height: `${N * 90 + 40}vh` }}>
+      <m.div className="ch-pin" style={{ "--c": color }}>
 
-      {/* Decorative connecting stem to string (Desktop only) */}
-      {!isMobile && (
-        <div
-          className="absolute left-1/2 -translate-x-1/2 w-0.5 border-l-2 border-dashed border-zinc-200 dark:border-zinc-800 pointer-events-none"
-          style={{
-            height: "110px",
-            top: isEven ? "auto" : "-110px",
-            bottom: isEven ? "-110px" : "auto",
-          }}
-        />
-      )}
+        <div className="wrap ch-layout">
+          <div className="cloud-anchor ch-anchor" data-cloud-anchor aria-hidden="true" />
 
-      <div style={{ transform: "translateZ(30px)" }} className="flex flex-col h-full">
-        {/* Header row */}
-        <div className="flex items-center justify-between mb-4">
-          <span
-            className="text-xs font-bold uppercase tracking-wider px-3.5 py-1 rounded-full text-white"
-            style={{ backgroundColor: exp.color }}
-          >
-            {exp.date}
-          </span>
-          <span className="text-2xl">{exp.tags[0] ? getTagEmoji(exp.tags[0]) : "💼"}</span>
+          <header className="ch-head">
+            <h2 className="ch-title">Experience</h2>
+            <p>Work and study, oldest first.</p>
+          </header>
+
+          <div className="ch-stage">
+            <p className="odo" aria-label={x.year}>
+              {[0, 1, 2, 3].map((k) => <DigitColumn key={k} k={k} t={t} />)}
+            </p>
+            <div className="ch-entries">
+              {ENTRIES.map((e, i) => <Chapter key={e.role + e.org} x={e} i={i} t={t} />)}
+            </div>
+            {/* Plain copy of the current entry for screen readers */}
+            <p className="sr-only" aria-live="polite">{`${x.role}, ${x.org}, ${x.date}. ${x.desc}`}</p>
+          </div>
+
+          <nav className="ch-nav" aria-label="Jump to entry">
+            <span className="ch-bar" aria-hidden="true"><m.span style={{ scaleX: bar }} /></span>
+            <div className="ch-dots">
+              {ENTRIES.map((e, i) => (
+                <button
+                  key={e.role + e.org}
+                  className={i === active ? "on" : ""}
+                  onClick={() => go(i)}
+                  aria-label={`${e.year}, ${e.role}`}
+                  aria-current={i === active ? "step" : undefined}
+                >
+                  {e.year}
+                </button>
+              ))}
+            </div>
+          </nav>
         </div>
-
-        {/* Role & Company */}
-        <h3 className="font-display italic text-2xl text-zinc-900 dark:text-white leading-tight mb-1">
-          {exp.role}
-        </h3>
-        <p className="text-zinc-400 dark:text-zinc-500 text-sm font-semibold mb-3">
-          @ {exp.company}
-        </p>
-
-        {/* Description */}
-        <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed mb-4 flex-grow">
-          {exp.desc}
-        </p>
-
-        {/* Tags */}
-        <div className="flex flex-wrap gap-1.5 mt-auto">
-          {exp.tags.map((tag) => (
-            <span
-              key={tag}
-              className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full"
-              style={{
-                backgroundColor: `${exp.color}15`,
-                color: exp.color,
-                border: `1.5px solid ${exp.color}35`,
-              }}
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
-      </div>
-    </motion.div>
+      </m.div>
+    </section>
   );
 }
