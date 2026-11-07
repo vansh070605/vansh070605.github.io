@@ -7,7 +7,6 @@ import Experience from "./components/Experience";
 import Skills     from "./components/Skills";
 import Contact    from "./components/Contact";
 import Footer     from "./components/Footer";
-import DetectCursor from "./components/DetectCursor";
 import Preloader  from "./components/Preloader";
 import { swarm } from "./swarm";
 
@@ -26,7 +25,6 @@ export default function App() {
         <PointCloud />
       </Suspense>
       <Nav />
-      <DetectCursor />
       <div className="page">
         <main>
           <Hero start={ready} />

@@ -1,24 +1,10 @@
-import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, m, useMotionValueEvent, useReducedMotion, useScroll, useSpring } from "framer-motion";
-import { useLenis } from "lenis/react";
+import { useEffect } from "react";
+import { m } from "framer-motion";
 import { projects } from "../data/content";
 import { swarm } from "../swarm";
-import Heading from "./Heading";
+import { ChapterNav, Line, Odometer, ScrubTitle, pad, useChapters } from "./Scrub";
 
-const EASE = [0.16, 1, 0.3, 1];
-const pad = (n) => String(n).padStart(2, "0");
-
-function useIsWide() {
-  const query = "(min-width: 901px)";
-  const [wide, setWide] = useState(() => window.matchMedia(query).matches);
-  useEffect(() => {
-    const mq = window.matchMedia(query);
-    const on = () => setWide(mq.matches);
-    mq.addEventListener("change", on);
-    return () => mq.removeEventListener("change", on);
-  }, []);
-  return wide;
-}
+const N = projects.length;
 
 function Links({ p }) {
   return (
@@ -41,128 +27,55 @@ function Links({ p }) {
   );
 }
 
-/* Desktop: the section pins for one screen per project. Scrolling swaps the
-   project on the right while the cloud on the left morphs into its symbol. */
-function Pinned() {
-  const ref = useRef(null);
-  const lenis = useLenis();
-  const reduce = useReducedMotion();
-  const [active, setActive] = useState(0);
-  const prev = useRef(0);
-  const n = projects.length;
-
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
-  const bar = useSpring(scrollYProgress, { stiffness: 120, damping: 30 });
-
-  useMotionValueEvent(scrollYProgress, "change", (v) => {
-    const i = Math.min(n - 1, Math.max(0, Math.floor(v * n)));
-    if (i !== active) { prev.current = active; setActive(i); }
-  });
-
-  useEffect(() => { swarm.project = projects[active].name; }, [active]);
-
-  // Jump to the middle of a project's scroll segment
-  const go = (i) => {
-    const el = ref.current;
-    const top = el.getBoundingClientRect().top + window.scrollY;
-    const y = top + ((i + 0.5) / n) * (el.offsetHeight - window.innerHeight);
-    lenis ? lenis.scrollTo(y, { duration: 1.2 }) : window.scrollTo({ top: y, behavior: "smooth" });
-  };
-
-  const dir = active >= prev.current ? 1 : -1;
-  const p = projects[active];
-  const rise = (delay) => ({
-    initial: reduce ? false : { y: 48 * dir, opacity: 0 },
-    animate: { y: 0, opacity: 1, transition: { duration: 0.9, ease: EASE, delay } },
-    exit: reduce ? undefined : { y: -32 * dir, opacity: 0, transition: { duration: 0.35, ease: [0.4, 0, 1, 1] } },
-  });
-
+function Chapter({ p, i, t, active }) {
   return (
-    <section id="work" ref={ref} className="work-pinned" style={{ height: `${n * 100}vh` }}>
-      <div className="work-pin" style={{ "--accent": p.color }}>
-        <div className="wrap stage work-stage">
-          <div className="work-head">
-            <Heading>Selected work</Heading>
-            <p className="work-count" aria-hidden="true">
-              <span>{pad(active + 1)}</span> / {pad(n)}
-            </p>
-          </div>
-
-          <div className="cloud-anchor work-anchor" data-cloud-anchor aria-hidden="true" />
-          <div className="stage-right work-show" aria-live="polite">
-            <AnimatePresence mode="wait" initial={false}>
-              <m.article key={p.name} className="work-card">
-                <m.p className="work-kind" {...rise(0)}>{p.kind}</m.p>
-                <h3 className="work-title">
-                  <span className="mask"><m.span {...rise(0.04)}>{p.name}</m.span></span>
-                </h3>
-                <m.p className="work-summary" {...rise(0.1)}>{p.summary}</m.p>
-                <m.p className="work-text" {...rise(0.16)}>{p.detail}</m.p>
-                <ul className="stack" aria-label="Built with">
-                  {p.stack.map((s, i) => <m.li key={s} {...rise(0.2 + i * 0.04)}>{s}</m.li>)}
-                </ul>
-                <m.div {...rise(0.3)}><Links p={p} /></m.div>
-              </m.article>
-            </AnimatePresence>
-          </div>
-
-
-          <div className="work-progress" aria-hidden="true">
-            <m.span style={{ scaleX: bar }} />
-          </div>
-          <nav className="work-index" aria-label="Projects">
-            {projects.map((proj, i) => (
-              <button
-                key={proj.name}
-                className={i === active ? "on" : ""}
-                aria-current={i === active ? "true" : undefined}
-                onClick={() => go(i)}
-                onMouseEnter={() => { swarm.project = proj.name; }}
-                onMouseLeave={() => { swarm.project = projects[active].name; }}
-                data-detect="project"
-              >
-                {proj.name}
-              </button>
-            ))}
-          </nav>
-        </div>
-      </div>
-    </section>
+    // Chapters are stacked; only the current one takes clicks
+    <article className="ch-entry" style={{ "--accent": p.color, pointerEvents: i === active ? "auto" : "none" }}>
+      <Line i={i} t={t} delay={0} className="ch-kicker">
+        <span className="ch-type">{p.kind}</span>
+        <span>{pad(i + 1)} / {pad(N)}</span>
+      </Line>
+      <ScrubTitle text={p.name} i={i} t={t} className="ch-role ch-name" />
+      <Line i={i} t={t} delay={0.06} className="ch-org">{p.summary}</Line>
+      <Line i={i} t={t} delay={0.1} className="ch-desc">{p.detail}</Line>
+      <Line i={i} t={t} delay={0.14} as="ul" className="ch-tags">
+        {p.stack.map((s) => <li key={s}>{s}</li>)}
+      </Line>
+      <Line i={i} t={t} delay={0.18} as="div" className="ch-links"><Links p={p} /></Line>
+    </article>
   );
 }
 
-/* Phones: no pinning. Every project is open and reveals as it scrolls in. */
-function Stacked() {
-  return (
-    <section id="work" className="section">
-      <div className="wrap">
-        <div className="work-head"><Heading>Selected work</Heading></div>
-        {projects.map((p) => (
-          <m.article
-            key={p.name}
-            className="work-card stacked"
-            style={{ "--accent": p.color }}
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "0px 0px -15% 0px" }}
-            transition={{ duration: 0.8, ease: EASE }}
-            onViewportEnter={() => { swarm.project = p.name; }}
-          >
-            <p className="work-kind">{p.kind}</p>
-            <h3 className="work-title">{p.name}</h3>
-            <p className="work-summary">{p.summary}</p>
-            <p className="work-text">{p.detail}</p>
-            <ul className="stack" aria-label="Built with">
-              {p.stack.map((s) => <li key={s}>{s}</li>)}
-            </ul>
-            <Links p={p} />
-          </m.article>
-        ))}
-      </div>
-    </section>
-  );
-}
-
+/* Pinned while you scroll, same as Experience: one chapter per project, the
+   number rolls, the name rises letter by letter, and the 3D cloud on the left
+   morphs into the project's symbol. */
 export default function Work() {
-  return useIsWide() ? <Pinned /> : <Stacked />;
+  const { ref, t, active, color, bar, go } = useChapters(N, projects.map((p) => p.color));
+  useEffect(() => { swarm.project = projects[active].name; }, [active]);
+  const p = projects[active];
+
+  return (
+    <section id="work" ref={ref} className="ch ch-work" style={{ height: `${N * 90 + 40}vh` }}>
+      <m.div className="ch-pin" style={{ "--c": color }}>
+        <div className="wrap ch-layout">
+          <div className="cloud-anchor ch-anchor" data-cloud-anchor aria-hidden="true" />
+
+          <header className="ch-head">
+            <h2 className="ch-title">Selected work</h2>
+            <a href="https://github.com/vansh070605" target="_blank" rel="noopener noreferrer" className="link">More on GitHub</a>
+          </header>
+
+          <div className="ch-stage">
+            <Odometer values={projects.map((_, i) => pad(i + 1))} t={t} label={pad(active + 1)} />
+            <div className="ch-entries">
+              {projects.map((proj, i) => <Chapter key={proj.name} p={proj} i={i} t={t} active={active} />)}
+            </div>
+            <p className="sr-only" aria-live="polite">{`${p.name}: ${p.summary}`}</p>
+          </div>
+
+          <ChapterNav labels={projects.map((x) => x.name)} active={active} bar={bar} go={go} />
+        </div>
+      </m.div>
+    </section>
+  );
 }

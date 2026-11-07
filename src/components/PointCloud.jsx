@@ -21,6 +21,8 @@ const STAGES = {
   experience: { side: -1, y: 0,    scale: 1,    shape: "helix",    opacity: 0.85, tint: null,   mix: 0.45 },
   skills:     { side: 1,  y: 0,    scale: 0.75, shape: "torus",    opacity: 0.65, tint: "#7C3AED", mix: 0.5 },
   contact:    { side: -1,  y: -0.1, scale: 0.82, shape: "portrait", opacity: 0.95, tint: "#C2410C", mix: 0.3 },
+  // Hidden in the footer so it does not clash with the sticker photo
+  footer:     { side: -1, y: -0.1, scale: 0.82, shape: "portrait", opacity: 0,  tint: "#C2410C", mix: 0.3 },
 };
 const STAGE_IDS = Object.keys(STAGES);
 const PROJECT_SHAPES = {
@@ -330,6 +332,7 @@ const fragmentShader = /* glsl */ `
 function Swarm({ data, isMobile, finePointer, reducedMotion, faceBoxRef, workBoxRef }) {
   const group = useRef();
   const geo = useRef();
+  const pts = useRef();
   const pointer = useRef({ x: 0, y: 0, moved: 0 });
   const sections = useRef({});
   const spinRef = useRef(0);
@@ -337,6 +340,8 @@ function Swarm({ data, isMobile, finePointer, reducedMotion, faceBoxRef, workBox
   const lastKey = useRef(null);
   const keyAt = useRef(0);
   const keyFrames = useRef(0);
+  // New point data (e.g. after switching phone/desktop) starts scattered: let it re-form
+  useEffect(() => { keyFrames.current = 0; }, [data]);
   const { camera, size } = useThree();
 
   const shapes = useMemo(() => buildShapes(data), [data]);
@@ -464,8 +469,11 @@ function Swarm({ data, isMobile, finePointer, reducedMotion, faceBoxRef, workBox
     g.rotation.y += (pointer.current.x * tilt + spinRef.current - g.rotation.y) * 0.06;
     g.rotation.x += (pointer.current.y * 0.12 + (key === "torus" ? 0.5 : 0) - g.rotation.x) * 0.05;
 
-    const targetOpacity = isMobile && id !== "top" ? Math.min(0.1, stage.opacity) : stage.opacity;
+    // Phones: the cloud lives only in the hero; behind text on a small screen it hurts reading
+    const targetOpacity = isMobile && id !== "top" ? 0 : stage.opacity;
     uniforms.uOpacity.value += (targetOpacity - uniforms.uOpacity.value) * 0.06;
+    // Skip drawing entirely while invisible
+    if (pts.current) pts.current.visible = uniforms.uOpacity.value > 0.01;
     uniforms.uFadeBottom.value += ((key === "portrait" ? 1 : 0) - uniforms.uFadeBottom.value) * 0.08;
     uniforms.uTime.value = state.clock.elapsedTime;
     const tint = stage.tint || (id === "experience" ? swarm.tint : PROJECT_COLORS[swarm.project]) || "#0E7C6B";
@@ -494,7 +502,7 @@ function Swarm({ data, isMobile, finePointer, reducedMotion, faceBoxRef, workBox
       wbox.style.transform = `translate3d(${(a.x * 0.5 + 0.5) * size.width}px, ${(-a.y * 0.5 + 0.5) * size.height}px, 0)`;
       wbox.style.width = `${(b.x - a.x) * 0.5 * size.width}px`;
       wbox.style.height = `${(a.y - b.y) * 0.5 * size.height}px`;
-      const show = id === "work" && !!ANIMATE[key] && now - keyAt.current > 900;
+      const show = !isMobile && id === "work" && !!ANIMATE[key] && now - keyAt.current > 900;
       if (show && wbox.dataset.name !== swarm.project) {
         wbox.dataset.name = swarm.project;
         const label = swarm.project.toLowerCase();
@@ -520,7 +528,7 @@ function Swarm({ data, isMobile, finePointer, reducedMotion, faceBoxRef, workBox
 
   return (
     <group ref={group}>
-      <points frustumCulled={false}>
+      <points ref={pts} frustumCulled={false}>
         <bufferGeometry ref={geo}>
           <bufferAttribute attach="attributes-position" args={[positions, 3]} usage={THREE.DynamicDrawUsage} />
           <bufferAttribute attach="attributes-aRand" args={[rand, 1]} />
@@ -539,7 +547,14 @@ function Swarm({ data, isMobile, finePointer, reducedMotion, faceBoxRef, workBox
 }
 
 export default function PointCloud() {
-  const isMobile = useMemo(() => window.matchMedia("(max-width: 720px)").matches, []);
+  // Live, so a window resized (or devtools switched) to phone width gets the phone layout
+  const [isMobile, setIsMobile] = useState(() => window.matchMedia("(max-width: 720px)").matches);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 720px)");
+    const on = () => setIsMobile(mq.matches);
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+  }, []);
   const finePointer = useMemo(() => window.matchMedia("(pointer: fine)").matches, []);
   const reducedMotion = useMemo(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches, []);
   const [data, setData] = useState(null);
